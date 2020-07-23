@@ -25,12 +25,17 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.root_path = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
+        self.browse_button.clicked.connect(self.select_file)
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h1 = QtWidgets.QHBoxLayout()
         self.layout_h1.addWidget(self.root_path)
         self.layout_h1.addWidget(self.browse_button)
         self.layout_h1.addWidget(self.scan_button)
         self.main_layout.addLayout(self.layout_h1)
+
+    def select_file(self):
+        self.path_to_file = QtWidgets.QFileDialog().getOpenFileUrl(self)
+        print(self.path_to_file)
 
     def center_window(self):
         """Centers window on screen."""
