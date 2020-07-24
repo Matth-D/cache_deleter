@@ -34,8 +34,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h1)
 
     def select_file(self):
-        self.path_to_file = QtWidgets.QFileDialog().getOpenFileUrl(self)
-        print(self.path_to_file)
+        self.file_qurl = QtWidgets.QFileDialog().getOpenFileUrl(self)
+        self.file_path = self.file_qurl[0].toLocalFile()
+        self.root_path.setText(self.file_path)
 
     def center_window(self):
         """Centers window on screen."""
