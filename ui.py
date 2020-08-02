@@ -5,6 +5,11 @@ import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 
 
+class FileTree(QtWidgets.QTreeWidget):
+    def __init__(self):
+        super(FileTree, self).__init__()
+
+
 class CacheDeleter(QtWidgets.QDialog):
     def __init__(self):
         super(CacheDeleter, self).__init__()
@@ -21,17 +26,45 @@ class CacheDeleter(QtWidgets.QDialog):
             round(self.screen_size.width() * 0.4),
             round(self.screen_size.height() * 0.8),
         )
-
         self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.setLayout(self.main_layout)
+
+        self.layout_h1 = QtWidgets.QHBoxLayout()
         self.root_path = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
         self.browse_button.clicked.connect(self.select_file)
         self.scan_button = QtWidgets.QPushButton("Scan", self)
-        self.layout_h1 = QtWidgets.QHBoxLayout()
         self.layout_h1.addWidget(self.root_path)
         self.layout_h1.addWidget(self.browse_button)
         self.layout_h1.addWidget(self.scan_button)
+
+        self.layout_h2 = QtWidgets.QHBoxLayout()
+        self.extensions_list = QtWidgets.QLineEdit(self)
+        self.extensions_label = QtWidgets.QLabel("File extensions")
+        self.time_threshold = QtWidgets.QLineEdit(self)
+        self.time_threshold_label = QtWidgets.QLabel("Limit Date")
+        self.layout_h2.addWidget(self.extensions_list)
+        self.layout_h2.addWidget(self.extensions_label)
+        self.layout_h2.addWidget(self.time_threshold)
+        self.layout_h2.addWidget(self.time_threshold_label)
+
+        self.file_tree = FileTree()
+
+        self.layout_h3 = QtWidgets.QHBoxLayout()
+        self.add_list = QtWidgets.QPushButton("Add", self)
+        self.remove_list = QtWidgets.QPushButton("Remove", self)
+        self.layout_h3.addWidget(self.add_list)
+        self.layout_h3.addWidget(self.remove_list)
+
+        self.placeholder = QtWidgets.QWidget()
+        self.placeholder.setStyleSheet("background-color:grey")
+        self.placeholder.setMinimumHeight(self.screen_size.height() * 0.2)
+
         self.main_layout.addLayout(self.layout_h1)
+        self.main_layout.addLayout(self.layout_h2)
+        self.main_layout.addWidget(self.file_tree)
+        self.main_layout.addLayout(self.layout_h3)
+        self.main_layout.addWidget(self.placeholder)
 
     def select_file(self):
         self.file_qurl = QtWidgets.QFileDialog().getOpenFileUrl(self)
