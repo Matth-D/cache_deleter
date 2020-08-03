@@ -10,6 +10,11 @@ class FileTree(QtWidgets.QTreeWidget):
         super(FileTree, self).__init__()
 
 
+# class FileList(QtWidgets.QListWidget):
+#     def __init__(self):
+#         super(FileList, self).__init__()
+
+
 class CacheDeleter(QtWidgets.QDialog):
     def __init__(self):
         super(CacheDeleter, self).__init__()
@@ -27,6 +32,7 @@ class CacheDeleter(QtWidgets.QDialog):
             round(self.screen_size.height() * 0.8),
         )
         self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.main_layout.setLayoutStretch(0, 0, 2, 0, 0)
         self.setLayout(self.main_layout)
 
         self.layout_h1 = QtWidgets.QHBoxLayout()
@@ -53,18 +59,30 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h3 = QtWidgets.QHBoxLayout()
         self.add_list = QtWidgets.QPushButton("Add", self)
         self.remove_list = QtWidgets.QPushButton("Remove", self)
+        self.horizontal_spacer_1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.layout_h3.addWidget(self.add_list)
         self.layout_h3.addWidget(self.remove_list)
+        self.layout_h3.addItem(self.horizontal_spacer_1)
+        self.layout_h3.setSpacing(50)
 
-        self.placeholder = QtWidgets.QWidget()
-        self.placeholder.setStyleSheet("background-color:grey")
-        self.placeholder.setMinimumHeight(self.screen_size.height() * 0.2)
+        self.layout_h4 = QtWidgets.QHBoxLayout()
+        self.list_view = QtWidgets.QListWidget()
+        self.layout_h4.addWidget(self.list_view)
+
+        self.layout_h5 = QtWidgets.QVBoxLayout()
+        self.delete_button = QtWidgets.QPushButton("Delete", self)
+        self.reset_all_button = QtWidgets.QPushButton("Reset All", self)
+        self.layout_h5.addWidget(self.delete_button)
+        self.layout_h5.addWidget(self.reset_all_button)
+        self.layout_h4.addLayout(self.layout_h5)
 
         self.main_layout.addLayout(self.layout_h1)
         self.main_layout.addLayout(self.layout_h2)
         self.main_layout.addWidget(self.file_tree)
         self.main_layout.addLayout(self.layout_h3)
-        self.main_layout.addWidget(self.placeholder)
+        self.main_layout.addLayout(self.layout_h4)
 
     def select_file(self):
         self.file_qurl = QtWidgets.QFileDialog().getOpenFileUrl(self)
