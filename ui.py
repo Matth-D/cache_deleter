@@ -1,8 +1,10 @@
-####!/usr/bin/python3.8
+#!/usr/bin/python3.8
 
 """Cache Deleter"""
 import sys
 from PySide2 import QtWidgets, QtGui, QtCore
+
+HOME = "~"
 
 
 class FileTree(QtWidgets.QTreeWidget):
@@ -32,27 +34,27 @@ class CacheDeleter(QtWidgets.QDialog):
             round(self.screen_size.height() * 0.8),
         )
         self.main_layout = QtWidgets.QVBoxLayout(self)
-        self.main_layout.setLayoutStretch(0, 0, 2, 0, 0)
+        # self.main_layout.setLayoutStretch(0, 0, 2, 0, 0)
         self.setLayout(self.main_layout)
 
         self.layout_h1 = QtWidgets.QHBoxLayout()
         self.root_path = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
         self.browse_button.clicked.connect(self.select_file)
-        self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h1.addWidget(self.root_path)
         self.layout_h1.addWidget(self.browse_button)
-        self.layout_h1.addWidget(self.scan_button)
 
         self.layout_h2 = QtWidgets.QHBoxLayout()
         self.extensions_list = QtWidgets.QLineEdit(self)
         self.extensions_label = QtWidgets.QLabel("File extensions")
         self.time_threshold = QtWidgets.QLineEdit(self)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
+        self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
         self.layout_h2.addWidget(self.time_threshold)
         self.layout_h2.addWidget(self.time_threshold_label)
+        self.layout_h2.addWidget(self.scan_button)
 
         self.file_tree = FileTree()
 
@@ -72,11 +74,11 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h4.addWidget(self.list_view)
 
         self.layout_h5 = QtWidgets.QVBoxLayout()
+        self.layout_h4.addLayout(self.layout_h5)
         self.delete_button = QtWidgets.QPushButton("Delete", self)
         self.reset_all_button = QtWidgets.QPushButton("Reset All", self)
         self.layout_h5.addWidget(self.delete_button)
         self.layout_h5.addWidget(self.reset_all_button)
-        self.layout_h4.addLayout(self.layout_h5)
 
         self.main_layout.addLayout(self.layout_h1)
         self.main_layout.addLayout(self.layout_h2)
@@ -85,7 +87,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h4)
 
     def select_file(self):
-        self.file_qurl = QtWidgets.QFileDialog().getOpenFileUrl(self)
+        self.file_dialog = QtWidgets.QFileDialog()
+        self.file_dialog.setDirectory(HOME)
+        self.file_qurl = self.file_dialog.getOpenFileUrl(self)
         self.file_path = self.file_qurl[0].toLocalFile()
         self.root_path.setText(self.file_path)
 
