@@ -4,7 +4,6 @@
 import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 
-#test modif git
 
 # 1- Browse for path in machine
 # 2- Select file or folder to be QTree root
