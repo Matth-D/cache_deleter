@@ -4,17 +4,25 @@
 import sys
 from PySide2 import QtWidgets, QtGui, QtCore
 
+# 1- Browse for path in machine
+# 2- Select file or folder to be QTree root
+# 3- Hit Scan button to deploy fill QTree widget
+# 4- Use add or remove buttons to add items to delete list
+# 5- Reset all or Delete all
+# 6- When Delete button is pressed, prompt warning and ask for confirmation.
+
 HOME = "~"
 
 
 class FileTree(QtWidgets.QTreeWidget):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
+        self.setColumnCount(3)
+        self.start_dir = kwargs.pop("root", HOME)
+        # self.fill_tree()
 
-
-# class FileList(QtWidgets.QListWidget):
-#     def __init__(self):
-#         super(FileList, self).__init__()
+    # def fill_tree(self):
+    #     def iterate():
 
 
 class CacheDeleter(QtWidgets.QDialog):
@@ -33,8 +41,8 @@ class CacheDeleter(QtWidgets.QDialog):
             round(self.screen_size.width() * 0.4),
             round(self.screen_size.height() * 0.8),
         )
+        # Layout management
         self.main_layout = QtWidgets.QVBoxLayout(self)
-        # self.main_layout.setLayoutStretch(0, 0, 2, 0, 0)
         self.setLayout(self.main_layout)
 
         self.layout_h1 = QtWidgets.QHBoxLayout()
@@ -56,7 +64,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h2.addWidget(self.time_threshold_label)
         self.layout_h2.addWidget(self.scan_button)
 
-        self.file_tree = FileTree()
+        self.layout_filetree = QtWidgets.QVBoxLayout()
+        self.file_tree = FileTree(self, root=self.root_path)
+        self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
         self.add_list = QtWidgets.QPushButton("Add", self)
@@ -73,22 +83,31 @@ class CacheDeleter(QtWidgets.QDialog):
         self.list_view = QtWidgets.QListWidget()
         self.layout_h4.addWidget(self.list_view)
 
-        self.layout_h5 = QtWidgets.QVBoxLayout()
-        self.layout_h4.addLayout(self.layout_h5)
+        self.layout_v2 = QtWidgets.QVBoxLayout()
+        self.layout_h4.addLayout(self.layout_v2)
         self.delete_button = QtWidgets.QPushButton("Delete", self)
         self.reset_all_button = QtWidgets.QPushButton("Reset All", self)
-        self.layout_h5.addWidget(self.delete_button)
-        self.layout_h5.addWidget(self.reset_all_button)
+        self.delete_button.setMinimumHeight(80)
+        self.reset_all_button.setMinimumHeight(80)
+        self.vertical_spacer_1 = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Minimum
+        )
+        self.layout_v2.addWidget(self.delete_button)
+        self.layout_v2.addWidget(self.reset_all_button)
+        self.layout_v2.addItem(self.vertical_spacer_1)
 
         self.main_layout.addLayout(self.layout_h1)
         self.main_layout.addLayout(self.layout_h2)
-        self.main_layout.addWidget(self.file_tree)
+        self.main_layout.addLayout(self.layout_filetree)
         self.main_layout.addLayout(self.layout_h3)
         self.main_layout.addLayout(self.layout_h4)
 
+        # Default Values
+        self.extensions_list.setText("bgeo.sc,vdb,abc")
+        self.root_path.setText("/")
+
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
-        self.file_dialog.setDirectory(HOME)
         self.file_qurl = self.file_dialog.getOpenFileUrl(self)
         self.file_path = self.file_qurl[0].toLocalFile()
         self.root_path.setText(self.file_path)
