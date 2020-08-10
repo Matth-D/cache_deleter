@@ -24,19 +24,20 @@ class FileTree(QtWidgets.QTreeWidget):
         # self.item_test = QtWidgets.QTreeWidgetItem(self, ["prout", "2k","21%","21/12/2019"])
         # for i in range(4):
         #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
-        def fillTree(self):
-            def iterate(currentDir, currentItem):
-                for f in os.listdir(currentDir):
-                    path = os.path.join(currentDir, f)
-                    if os.path.isdir(path):
-                        dirItem = QtWidgets.QTreeWidgetItem(currentItem)
-                        dirItem.setText(0, f)
-                        iterate(path, dirItem)
-                    else:
-                        fileItem = QtWidgets.QTreeWidgetItem(currentItem)
-                        fileItem.setText(0, f)
 
-            iterate(self.startDir, self)
+    def fill_tree(self):
+        def iterate(current_dir, current_item):
+            for file in os.listdir(current_dir):
+                path = os.path.join(current_dir, file)
+                if os.path.isdir(path):
+                    dir_item = QtWidgets.QTreeWidgetItem(current_item)
+                    dir_item.setText(0, file)
+                    iterate(path, dir_item)
+                else:
+                    file_item = QtWidgets.QTreeWidgetItem(current_item)
+                    file_item.setText(0, file)
+
+        iterate(self.root_dir, self)
 
 
 class CacheDeleter(QtWidgets.QDialog):
@@ -49,8 +50,7 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def init_ui(self):
         """Init UI Layout."""
-        desktop = QtWidgets.QDesktopWidget()
-        self.screen_size = desktop.availableGeometry(desktop.primaryScreen())
+        self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
             round(self.screen_size.width() * 0.4),
             round(self.screen_size.height() * 0.8),
@@ -79,7 +79,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h2.addWidget(self.scan_button)
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
-        self.file_tree = FileTree(self, root=self.root_path)
+        self.file_tree = FileTree(self, root=self.root_path.text)
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
@@ -120,6 +120,8 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list.setText("bgeo.sc,vdb,abc")
         self.root_path.setText("/")
 
+        # self.file_tree.fill_tree()
+
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
         self.file_qurl = self.file_dialog.getOpenFileUrl(self)
@@ -129,7 +131,9 @@ class CacheDeleter(QtWidgets.QDialog):
     def center_window(self):
         """Centers window on screen."""
         app_geo = self.frameGeometry()
-        center_point = QtWidgets.QDesktopWidget().availableGeometry().center()
+        center_point = (
+            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+        )
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
 
