@@ -18,8 +18,8 @@ HOME = "~"
 class FileTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
-        self.setColumnCount(3)
         self.start_dir = kwargs.pop("root", HOME)
+        self.setHeaderLabels(["Name","File Size","root %","Date Modified"])
         # self.fill_tree()
 
     # def fill_tree(self):
