@@ -79,7 +79,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h2.addWidget(self.scan_button)
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
-        self.file_tree = FileTree(self, root=self.root_path.text)
+        self.file_tree = FileTree(self, root=self.root_path.text())
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
@@ -120,7 +120,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list.setText("bgeo.sc,vdb,abc")
         self.root_path.setText("/")
 
-        # self.file_tree.fill_tree()
+        self.file_tree.fill_tree()
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
