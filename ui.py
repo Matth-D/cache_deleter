@@ -1,7 +1,8 @@
-#!/usr/bin/python3.8
+##!/usr/bin/python3.8
 
 """Cache Deleter"""
 import sys
+import os
 from PySide2 import QtWidgets, QtGui, QtCore
 
 
@@ -18,12 +19,24 @@ HOME = "~"
 class FileTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
-        self.start_dir = kwargs.pop("root", HOME)
-        self.setHeaderLabels(["Name","File Size","root %","Date Modified"])
-        # self.fill_tree()
+        self.root_dir = kwargs.pop("root", HOME)
+        self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
+        # self.item_test = QtWidgets.QTreeWidgetItem(self, ["prout", "2k","21%","21/12/2019"])
+        # for i in range(4):
+        #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
+        def fillTree(self):
+            def iterate(currentDir, currentItem):
+                for f in os.listdir(currentDir):
+                    path = os.path.join(currentDir, f)
+                    if os.path.isdir(path):
+                        dirItem = QtWidgets.QTreeWidgetItem(currentItem)
+                        dirItem.setText(0, f)
+                        iterate(path, dirItem)
+                    else:
+                        fileItem = QtWidgets.QTreeWidgetItem(currentItem)
+                        fileItem.setText(0, f)
 
-    # def fill_tree(self):
-    #     def iterate():
+            iterate(self.startDir, self)
 
 
 class CacheDeleter(QtWidgets.QDialog):
