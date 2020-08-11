@@ -3,8 +3,8 @@
 """Cache Deleter"""
 import sys
 import os
+import platform
 from PySide2 import QtWidgets, QtGui, QtCore
-
 
 # 1- Browse for path in machine
 # 2- Select file or folder to be QTree root
@@ -13,36 +13,48 @@ from PySide2 import QtWidgets, QtGui, QtCore
 # 5- Reset all or Delete all
 # 6- When Delete button is pressed, prompt warning and ask for confirmation.
 
-HOME = "~"
+
+# Set constants
+PLATFORM_NAME = platform.system().lower()
+if PLATFORM_NAME == "windows":
+    HOME = "%USERPROFILE%"
+else:
+    HOME = "~"
 
 
 class FileTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
-        self.root_dir = kwargs.pop("root", HOME)
+        self.root_path_button = kwargs.pop("root", HOME)
+        self.root_path = None
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
+
+    def get_root_value(self):
+        self.root_path = self.root_path_button.text()
+
         # self.item_test = QtWidgets.QTreeWidgetItem(self, ["prout", "2k","21%","21/12/2019"])
         # for i in range(4):
         #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
 
-    def fill_tree(self):
-        def iterate(current_dir, current_item):
-            for file in os.listdir(current_dir):
-                path = os.path.join(current_dir, file)
-                if os.path.isdir(path):
-                    dir_item = QtWidgets.QTreeWidgetItem(current_item)
-                    dir_item.setText(0, file)
-                    iterate(path, dir_item)
-                else:
-                    file_item = QtWidgets.QTreeWidgetItem(current_item)
-                    file_item.setText(0, file)
+    # def fill_tree(self):
+    # def iterate(current_dir, current_item):
+    #     for file in os.listdir(current_dir):
+    #         path = os.path.join(current_dir, file)
+    #         if os.path.isdir(path):
+    #             dir_item = QtWidgets.QTreeWidgetItem(current_item)
+    #             dir_item.setText(0, file)
+    #             iterate(path, dir_item)
+    #         else:
+    #             file_item = QtWidgets.QTreeWidgetItem(current_item)
+    #             file_item.setText(0, file)
 
-        iterate(self.root_dir, self)
+    # iterate(self.root_dir, self)
 
 
 class CacheDeleter(QtWidgets.QDialog):
     def __init__(self):
         super(CacheDeleter, self).__init__()
+        self.root_path = None
         self.init_ui()
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.setWindowTitle("Cache Deleter")
@@ -60,10 +72,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.setLayout(self.main_layout)
 
         self.layout_h1 = QtWidgets.QHBoxLayout()
-        self.root_path = QtWidgets.QLineEdit(self)
+        self.root_path_button = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
-        self.browse_button.clicked.connect(self.select_file)
-        self.layout_h1.addWidget(self.root_path)
+        self.layout_h1.addWidget(self.root_path_button)
         self.layout_h1.addWidget(self.browse_button)
 
         self.layout_h2 = QtWidgets.QHBoxLayout()
@@ -79,7 +90,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h2.addWidget(self.scan_button)
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
-        self.file_tree = FileTree(self, root=self.root_path.text())
+        self.file_tree = FileTree(self, root=self.root_path_button)
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
@@ -116,17 +127,17 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h3)
         self.main_layout.addLayout(self.layout_h4)
 
-        # Default Values
+        # Signals and connect
         self.extensions_list.setText("bgeo.sc,vdb,abc")
-        self.root_path.setText("/")
-
-        self.file_tree.fill_tree()
+        self.browse_button.clicked.connect(self.select_file)
+        self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
+        # self.scan_button.clicked.connect(self.file_tree.fill_tree)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
         self.file_qurl = self.file_dialog.getOpenFileUrl(self)
         self.file_path = self.file_qurl[0].toLocalFile()
-        self.root_path.setText(self.file_path)
+        self.root_path_button.setText(self.file_path)
 
     def center_window(self):
         """Centers window on screen."""
