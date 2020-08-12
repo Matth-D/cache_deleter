@@ -22,6 +22,38 @@ else:
     HOME = "~"
 
 
+class PopUpNoPath(QtWidgets.QDialog):
+    def __init__(self):
+        super(PopUpNoPath, self).__init__()
+        self.init_ui()
+        self.setGeometry(300, 300, 300, 300)
+        self.center_window()
+
+    def init_ui(self):
+        self.main_layout = QtWidgets.QVBoxLayout(self)
+        self.warning_label = QtWidgets.QLabel(
+            "Please enter a root path before scanning"
+        )
+        self.ok_button = QtWidgets.QPushButton("OK", self)
+
+        self.main_layout.addWidget(self.warning_label)
+        self.main_layout.addWidget(self.ok_button)
+
+        self.ok_button.clicked.connect(close_window)
+
+    def center_window(self):
+        """Centers window on screen."""
+        app_geo = self.frameGeometry()
+        center_point = (
+            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+        )
+        app_geo.moveCenter(center_point)
+        self.move(app_geo.topLeft())
+
+    def close_window(self):
+        self.close()
+
+
 class FileTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
@@ -36,19 +68,24 @@ class FileTree(QtWidgets.QTreeWidget):
         # for i in range(4):
         #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
 
-    # def fill_tree(self):
-    # def iterate(current_dir, current_item):
-    #     for file in os.listdir(current_dir):
-    #         path = os.path.join(current_dir, file)
-    #         if os.path.isdir(path):
-    #             dir_item = QtWidgets.QTreeWidgetItem(current_item)
-    #             dir_item.setText(0, file)
-    #             iterate(path, dir_item)
-    #         else:
-    #             file_item = QtWidgets.QTreeWidgetItem(current_item)
-    #             file_item.setText(0, file)
+    def fill_tree(self):
+        if self.root_path is None:
+            self.pop_up = PopUpNoPath()
+            self.pop_up.show()
+            return
 
-    # iterate(self.root_dir, self)
+        def iterate(current_dir, current_item):
+            for file in os.listdir(current_dir):
+                path = os.path.join(current_dir, file)
+                if os.path.isdir(path):
+                    dir_item = QtWidgets.QTreeWidgetItem(current_item)
+                    dir_item.setText(0, file)
+                    iterate(path, dir_item)
+                else:
+                    file_item = QtWidgets.QTreeWidgetItem(current_item)
+                    file_item.setText(0, file)
+
+        iterate(self.root_path, self)
 
 
 class CacheDeleter(QtWidgets.QDialog):
@@ -131,7 +168,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list.setText("bgeo.sc,vdb,abc")
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
-        # self.scan_button.clicked.connect(self.file_tree.fill_tree)
+        self.scan_button.clicked.connect(self.file_tree.fill_tree)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
