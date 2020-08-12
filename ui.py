@@ -17,16 +17,16 @@ from PySide2 import QtWidgets, QtGui, QtCore
 # Set constants
 PLATFORM_NAME = platform.system().lower()
 if PLATFORM_NAME == "windows":
-    HOME = "%USERPROFILE%"
+    HOME = os.environ["USERPROFILE"]
 else:
     HOME = "~"
 
 
-class PopUpNoPath(QtWidgets.QDialog):
+class PopUpNoPath(QtWidgets.QWidget):
     def __init__(self):
         super(PopUpNoPath, self).__init__()
         self.init_ui()
-        self.setGeometry(300, 300, 300, 300)
+        self.setGeometry(150, 140, 100, 100)
         self.center_window()
 
     def init_ui(self):
@@ -39,7 +39,7 @@ class PopUpNoPath(QtWidgets.QDialog):
         self.main_layout.addWidget(self.warning_label)
         self.main_layout.addWidget(self.ok_button)
 
-        self.ok_button.clicked.connect(close_window)
+        self.ok_button.clicked.connect(self.close_window)
 
     def center_window(self):
         """Centers window on screen."""
@@ -172,6 +172,7 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
+        self.file_dialog.setDirectory(HOME)
         # self.file_qurl = self.file_dialog.getOpenFileUrl(self)
         # self.file_path = self.file_qurl[0].toLocalFile()
         self.folder_path = self.file_dialog.getExistingDirectory()
