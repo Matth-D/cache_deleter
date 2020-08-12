@@ -17,12 +17,12 @@ from PySide2 import QtWidgets, QtGui, QtCore
 # Set constants
 PLATFORM_NAME = platform.system().lower()
 if PLATFORM_NAME == "windows":
-    HOME = os.environ["USERPROFILE"]
+    HOME = os.environ.get("USERPROFILE")
 else:
     HOME = "~"
 
 
-class PopUpNoPath(QtWidgets.QWidget):
+class PopUpNoPath(QtWidgets.QDialog):
     def __init__(self):
         super(PopUpNoPath, self).__init__()
         self.init_ui()
@@ -30,16 +30,17 @@ class PopUpNoPath(QtWidgets.QWidget):
         self.center_window()
 
     def init_ui(self):
-        self.main_layout = QtWidgets.QVBoxLayout(self)
-        self.warning_label = QtWidgets.QLabel(
+        main_layout = QtWidgets.QVBoxLayout(self)
+        warning_label = QtWidgets.QLabel(
             "Please enter a root path before scanning"
         )
-        self.ok_button = QtWidgets.QPushButton("OK", self)
+        ok_button = QtWidgets.QPushButton("OK", self)
+        ok_button.
 
-        self.main_layout.addWidget(self.warning_label)
-        self.main_layout.addWidget(self.ok_button)
+        main_layout.addWidget(warning_label)
+        main_layout.addWidget(ok_button)
 
-        self.ok_button.clicked.connect(self.close_window)
+        ok_button.clicked.connect(self.close_window)
 
     def center_window(self):
         """Centers window on screen."""
@@ -71,7 +72,7 @@ class FileTree(QtWidgets.QTreeWidget):
     def fill_tree(self):
         if self.root_path is None:
             self.pop_up = PopUpNoPath()
-            self.pop_up.show()
+            self.pop_up.exec_()
             return
 
         def iterate(current_dir, current_item):
@@ -101,7 +102,7 @@ class CacheDeleter(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.4),
+            round(self.screen_size.width() * 0.3),
             round(self.screen_size.height() * 0.8),
         )
         # Layout management
