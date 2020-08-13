@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+##!/usr/bin/python3.8
 
 """Cache Deleter"""
 import sys
@@ -58,6 +58,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.root_path_button = kwargs.pop("root", HOME)
         self.root_path = None
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
+        self.pop_up = PopUpNoPath()
 
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
@@ -67,23 +68,25 @@ class FileTree(QtWidgets.QTreeWidget):
         #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
 
     def fill_tree(self):
+        top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
+        if top_level_item is not None:
+            return
         if self.root_path is None:
-            self.pop_up = PopUpNoPath()
             self.pop_up.exec_()
             return
 
-        def iterate(current_dir, current_item):
+        def iterate_file(current_dir, current_item):
             for file in os.listdir(current_dir):
                 path = os.path.join(current_dir, file)
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
                     dir_item.setText(0, file)
-                    iterate(path, dir_item)
+                    iterate_file(path, dir_item)
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
                     file_item.setText(0, file)
 
-        iterate(self.root_path, self)
+        iterate_file(self.root_path, self)
 
 
 class CacheDeleter(QtWidgets.QDialog):
@@ -116,6 +119,12 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list = QtWidgets.QLineEdit(self)
         self.extensions_label = QtWidgets.QLabel("File extensions")
         self.time_threshold = QtWidgets.QLineEdit(self)
+        self.time_threshold.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
+            )
+        )
+        self.time_threshold.setMaximumWidth(60)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
@@ -150,7 +159,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.delete_button.setMinimumHeight(80)
         self.reset_all_button.setMinimumHeight(80)
         self.vertical_spacer_1 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
         )
         self.layout_v2.addWidget(self.delete_button)
         self.layout_v2.addWidget(self.reset_all_button)
@@ -167,6 +176,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
+        self.time_threshold.setText("14")
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
