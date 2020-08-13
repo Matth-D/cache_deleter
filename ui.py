@@ -99,7 +99,7 @@ class CacheDeleter(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.3),
+            round(self.screen_size.width() * 0.4),
             round(self.screen_size.height() * 0.8),
         )
         # Layout management
