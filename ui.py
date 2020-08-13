@@ -1,4 +1,4 @@
-##!/usr/bin/python3.8
+#!/usr/bin/python3.8
 
 """Cache Deleter"""
 import sys
@@ -31,11 +31,8 @@ class PopUpNoPath(QtWidgets.QDialog):
 
     def init_ui(self):
         main_layout = QtWidgets.QVBoxLayout(self)
-        warning_label = QtWidgets.QLabel(
-            "Please enter a root path before scanning"
-        )
+        warning_label = QtWidgets.QLabel("Please enter a root path before scanning")
         ok_button = QtWidgets.QPushButton("OK", self)
-        ok_button.
 
         main_layout.addWidget(warning_label)
         main_layout.addWidget(ok_button)
