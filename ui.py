@@ -6,9 +6,9 @@ import os
 import platform
 from PySide2 import QtWidgets, QtGui, QtCore
 
-# 1- Browse for path in machine
-# 2- Select file or folder to be QTree root
-# 3- Hit Scan button to deploy fill QTree widget
+# 1- Browse for path in machine - DONE
+# 2- Select file or folder to be QTree root - DONE
+# 3- Hit Scan button to deploy fill QTree widget - Need to cancel Scan if tree already filled
 # 4- Use add or remove buttons to add items to delete list
 # 5- Reset all or Delete all
 # 6- When Delete button is pressed, prompt warning and ask for confirmation.
@@ -150,7 +150,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.delete_button.setMinimumHeight(80)
         self.reset_all_button.setMinimumHeight(80)
         self.vertical_spacer_1 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Minimum
+            20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum
         )
         self.layout_v2.addWidget(self.delete_button)
         self.layout_v2.addWidget(self.reset_all_button)
