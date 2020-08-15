@@ -1,9 +1,10 @@
-##!/usr/bin/python3.8
+#!/usr/bin/python3.8
 
 """Cache Deleter"""
 import sys
 import os
 import platform
+import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
 # 1- Browse for path in machine - DONE
@@ -63,10 +64,6 @@ class FileTree(QtWidgets.QTreeWidget):
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
 
-        # self.item_test = QtWidgets.QTreeWidgetItem(self, ["prout", "2k","21%","21/12/2019"])
-        # for i in range(4):
-        #     subitm = QtWidgets.QTreeWidgetItem(self.item_test, ["prout", "2k","21%","21/12/2019"])
-
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
         if top_level_item is not None:
@@ -78,13 +75,17 @@ class FileTree(QtWidgets.QTreeWidget):
         def iterate_file(current_dir, current_item):
             for file in os.listdir(current_dir):
                 path = os.path.join(current_dir, file)
+                byte_size = utils.get_size(path)
+                file_size = utils.byte_size_to_display(byte_size)
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
                     dir_item.setText(0, file)
+                    dir_item.setText(1, file_size)
                     iterate_file(path, dir_item)
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
                     file_item.setText(0, file)
+                    file_item.setText(1, file_size)
 
         iterate_file(self.root_path, self)
 
@@ -177,6 +178,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold.setText("14")
+        self.root_path_button.setText("/home/matthieu/GIT")
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
