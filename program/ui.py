@@ -1,8 +1,11 @@
 #!/usr/bin/python3.8
 
 """Cache Deleter"""
+
+
 import sys
 import os
+import time
 import platform
 import utils
 from PySide2 import QtWidgets, QtGui, QtCore
@@ -21,6 +24,12 @@ if PLATFORM_NAME == "windows":
     HOME = os.environ.get("USERPROFILE")
 else:
     HOME = "~"
+
+
+class RootPercentageBar(QtWidgets.QProgressBar):
+    def __init__(self, value):
+        super(RootPercentageBar, self).__init__()
+        self.setValue(value)
 
 
 class PopUpNoPath(QtWidgets.QDialog):
@@ -58,11 +67,13 @@ class FileTree(QtWidgets.QTreeWidget):
         super(FileTree, self).__init__()
         self.root_path_button = kwargs.pop("root", HOME)
         self.root_path = None
+        self.root_size = None
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
 
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
+        self.root_size = utils.get_size(self.root_path)
 
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
@@ -77,15 +88,19 @@ class FileTree(QtWidgets.QTreeWidget):
                 path = os.path.join(current_dir, file)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
+                root_prct = "{:.2f}".format((byte_size / self.root_size) * 100)
+                # date_modified_unix = os.path.getmtime(path)
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
                     dir_item.setText(0, file)
                     dir_item.setText(1, file_size)
+                    dir_item.setText(2, root_prct)
                     iterate_file(path, dir_item)
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
                     file_item.setText(0, file)
                     file_item.setText(1, file_size)
+                    file_item.setText(2, root_prct)
 
         iterate_file(self.root_path, self)
 
