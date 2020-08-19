@@ -88,19 +88,22 @@ class FileTree(QtWidgets.QTreeWidget):
                 path = os.path.join(current_dir, file)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
-                root_prct = "{:.2f}".format((byte_size / self.root_size) * 100)
-                # date_modified_unix = os.path.getmtime(path)
+                root_prct = round((byte_size / self.root_size) * 100)
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
                     dir_item.setText(0, file)
                     dir_item.setText(1, file_size)
-                    dir_item.setText(2, root_prct)
+                    progress = self.setItemWidget(
+                        dir_item, 2, RootPercentageBar(root_prct)
+                    )
                     iterate_file(path, dir_item)
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
                     file_item.setText(0, file)
                     file_item.setText(1, file_size)
-                    file_item.setText(2, root_prct)
+                    progress = self.setItemWidget(
+                        file_item, 2, RootPercentageBar(root_prct)
+                    )
 
         iterate_file(self.root_path, self)
 

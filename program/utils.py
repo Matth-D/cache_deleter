@@ -18,6 +18,8 @@ def byte_size_to_display(byte_size):
 
 
 def get_size(path):
+    if path == "":
+        return
     if os.path.isdir(path) is False:
         file_size = os.path.getsize(path)
     else:
@@ -26,6 +28,8 @@ def get_size(path):
 
 
 def get_dir_size(path):
+    if path == "":
+        return
     byte_size_total = 0
     for item in os.scandir(path):
         item_path = os.path.join(path, item)
