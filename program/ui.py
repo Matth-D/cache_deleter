@@ -112,6 +112,7 @@ class FileTree(QtWidgets.QTreeWidget):
                     progress = self.setItemWidget(
                         file_item, 2, RootPercentageBar(root_prct)
                     )
+                    file_item.setText(3, modification_time)
 
         iterate_file(self.root_path, self)
 
