@@ -8,7 +8,9 @@ import os
 import time
 import platform
 import utils
+import datetime
 from PySide2 import QtWidgets, QtGui, QtCore
+
 
 # 1- Browse for path in machine - DONE
 # 2- Select file or folder to be QTree root - DONE
@@ -89,6 +91,11 @@ class FileTree(QtWidgets.QTreeWidget):
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
                 root_prct = round((byte_size / self.root_size) * 100)
+
+                modification_time = time.strftime(
+                    "%d/%m/%Y", time.localtime(os.path.getmtime(path))
+                )
+
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
                     dir_item.setText(0, file)
@@ -96,6 +103,7 @@ class FileTree(QtWidgets.QTreeWidget):
                     progress = self.setItemWidget(
                         dir_item, 2, RootPercentageBar(root_prct)
                     )
+                    dir_item.setText(3, modification_time)
                     iterate_file(path, dir_item)
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
