@@ -68,14 +68,19 @@ class FileTree(QtWidgets.QTreeWidget):
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
         self.root_path_button = kwargs.pop("root", HOME)
+        self.time_threshold_button = kwargs.pop("time", None)
         self.root_path = None
         self.root_size = None
+        self.time_delta = None
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
 
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
         self.root_size = utils.get_size(self.root_path)
+
+    def get_time_threshold(self):
+        self.time_delta = int(self.time_threshold_button.text())
 
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
@@ -86,15 +91,17 @@ class FileTree(QtWidgets.QTreeWidget):
             return
 
         def iterate_file(current_dir, current_item):
+
+            today = datetime.date.today()
+
             for file in os.listdir(current_dir):
                 path = os.path.join(current_dir, file)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
                 root_prct = round((byte_size / self.root_size) * 100)
-
-                modification_time = time.strftime(
-                    "%d/%m/%Y", time.localtime(os.path.getmtime(path))
-                )
+                m_time = os.path.getmtime(path)
+                m_date = datetime.datetime.fromtimestamp(m_time).date()
+                m_date_display = m_date.strftime("%d/%m/%Y")
 
                 if os.path.isdir(path):
                     dir_item = QtWidgets.QTreeWidgetItem(current_item)
@@ -103,8 +110,9 @@ class FileTree(QtWidgets.QTreeWidget):
                     progress = self.setItemWidget(
                         dir_item, 2, RootPercentageBar(root_prct)
                     )
-                    dir_item.setText(3, modification_time)
+                    dir_item.setText(3, m_date_display)
                     iterate_file(path, dir_item)
+
                 else:
                     file_item = QtWidgets.QTreeWidgetItem(current_item)
                     file_item.setText(0, file)
@@ -112,7 +120,7 @@ class FileTree(QtWidgets.QTreeWidget):
                     progress = self.setItemWidget(
                         file_item, 2, RootPercentageBar(root_prct)
                     )
-                    file_item.setText(3, modification_time)
+                    file_item.setText(3, m_date_display)
 
         iterate_file(self.root_path, self)
 
@@ -125,6 +133,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.setWindowTitle("Cache Deleter")
         self.center_window()
+        self.time_threshold = None
 
     def init_ui(self):
         """Init UI Layout."""
@@ -146,23 +155,26 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h2 = QtWidgets.QHBoxLayout()
         self.extensions_list = QtWidgets.QLineEdit(self)
         self.extensions_label = QtWidgets.QLabel("File extensions")
-        self.time_threshold = QtWidgets.QLineEdit(self)
-        self.time_threshold.setSizePolicy(
+        self.time_threshold_button = QtWidgets.QLineEdit(self)
+        self.time_threshold_button.setSizePolicy(
             QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed
             )
         )
-        self.time_threshold.setMaximumWidth(60)
+        self.time_threshold_button.setInputMask("999")
+        self.time_threshold_button.setMaximumWidth(60)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
-        self.layout_h2.addWidget(self.time_threshold)
+        self.layout_h2.addWidget(self.time_threshold_button)
         self.layout_h2.addWidget(self.time_threshold_label)
         self.layout_h2.addWidget(self.scan_button)
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
-        self.file_tree = FileTree(self, root=self.root_path_button)
+        self.file_tree = FileTree(
+            self, root=self.root_path_button, time=self.time_threshold_button
+        )
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
@@ -203,15 +215,16 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list.setText("bgeo.sc,vdb,abc")
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
+        self.time_threshold_button.textChanged.connect(
+            self.file_tree.get_time_threshold
+        )
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
-        self.time_threshold.setText("14")
+        self.time_threshold_button.setText("14")
         self.root_path_button.setText("/home/matthieu/GIT")
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
         self.file_dialog.setDirectory(HOME)
-        # self.file_qurl = self.file_dialog.getOpenFileUrl(self)
-        # self.file_path = self.file_qurl[0].toLocalFile()
         self.folder_path = self.file_dialog.getExistingDirectory()
         self.root_path_button.setText(self.folder_path)
 

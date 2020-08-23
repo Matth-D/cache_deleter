@@ -12,7 +12,7 @@ today = datetime.date.today()
 path = "/home/matthieu/Documents/bb.txt"
 m_time = os.path.getmtime(path)
 date_file = datetime.datetime.fromtimestamp(m_time).date()
-
+date_file_display = date_file.strftime("%d/%m/%Y")
 
 # We also get a time delta
 
@@ -25,3 +25,7 @@ time_delta = 14
 time_delta_format = datetime.timedelta(time_delta)
 
 limit_date = today - time_delta_format
+
+print(date_file, limit_date)
+print(date_file > limit_date)
+print(date_file_display)
