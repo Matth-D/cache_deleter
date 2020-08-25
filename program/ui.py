@@ -1,4 +1,4 @@
-#!/usr/bin/python3.8
+# usr/bin/python3.8
 
 """Cache Deleter"""
 
@@ -14,7 +14,7 @@ from PySide2 import QtWidgets, QtGui, QtCore
 
 # 1- Browse for path in machine - DONE
 # 2- Select file or folder to be QTree root - DONE
-# 3- Hit Scan button to deploy fill QTree widget - Need to cancel Scan if tree already filled
+# 3- Hit Scan button to deploy fill QTree widget - Need to cancel Scan if tree already filled - DONE
 # 4- Use add or remove buttons to add items to delete list
 # 5- Reset all or Delete all
 # 6- When Delete button is pressed, prompt warning and ask for confirmation.
@@ -84,6 +84,7 @@ class FileTree(QtWidgets.QTreeWidget):
 
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
+
         if top_level_item is not None:
             return
         if self.root_path is None:
@@ -98,9 +99,14 @@ class FileTree(QtWidgets.QTreeWidget):
                 path = os.path.join(current_dir, file)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
-                root_prct = round((byte_size / self.root_size) * 100)
+                if byte_size == 0:
+                    root_prct = 0
+                else:
+                    root_prct = round((byte_size / self.root_size) * 100)
                 m_time = os.path.getmtime(path)
                 m_date = datetime.datetime.fromtimestamp(m_time).date()
+                datetime_delta = datetime.timedelta(self.time_delta)
+                limit_date = today - datetime_delta
                 m_date_display = m_date.strftime("%d/%m/%Y")
 
                 if os.path.isdir(path):
@@ -111,6 +117,10 @@ class FileTree(QtWidgets.QTreeWidget):
                         dir_item, 2, RootPercentageBar(root_prct)
                     )
                     dir_item.setText(3, m_date_display)
+                    # if m_date < limit_date:
+                    #    dir_item.setText(3, "after")
+                    # else:
+                    #    dir_item.setText(3, "before")
                     iterate_file(path, dir_item)
 
                 else:
@@ -121,6 +131,10 @@ class FileTree(QtWidgets.QTreeWidget):
                         file_item, 2, RootPercentageBar(root_prct)
                     )
                     file_item.setText(3, m_date_display)
+                    # if m_date < limit_date:
+                    #    file_item.setText(3, "after")
+                    # else:
+                    #    file_item.setText(3, "before")
 
         iterate_file(self.root_path, self)
 
@@ -220,7 +234,9 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold_button.setText("14")
-        self.root_path_button.setText("/home/matthieu/GIT")
+        self.root_path_button.setText(
+            "/home/matthieu/GIT/cache_deleter/program/test_folder"
+        )
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()

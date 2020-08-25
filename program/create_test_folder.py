@@ -11,7 +11,9 @@
 
 import os
 import datetime
+import time
 
+today = datetime.date.today()
 
 path_root = "/home/matthieu/GIT/cache_deleter/program/"
 
@@ -31,13 +33,28 @@ for i in range(150):
     f1_name = "bgeo_sequence.{}.bgeo.sc".format(i)
     f1_path = os.path.join(folder1, f1_name)
     f1 = open(f1_path, "w")
+    t_delta = datetime.timedelta(7)
+    date_dt = today - t_delta
+    mod_time = time.mktime(date_dt.timetuple())
+    os.utime(f1_path, (mod_time, mod_time))
+os.utime(folder1, (mod_time, mod_time))
 
 for i in range(200):
     f2_name = "vdb_sequence.{}.vdb".format(i)
     f2_path = os.path.join(folder2, f2_name)
     f2 = open(f2_path, "w")
+    t_delta = datetime.timedelta(16)
+    date_dt = today - t_delta
+    mod_time = time.mktime(date_dt.timetuple())
+    os.utime(f2_path, (mod_time, mod_time))
+os.utime(folder2, (mod_time, mod_time))
 
 for i in range(75):
     f3_name = "other_sequence.{}.txt".format(i)
     f3_path = os.path.join(folder3, f3_name)
     f3 = open(f3_path, "w")
+    t_delta = datetime.timedelta(16)
+    date_dt = today - t_delta
+    mod_time = time.mktime(date_dt.timetuple())
+    os.utime(f2_path, (mod_time, mod_time))
+os.utime(folder3, (mod_time, mod_time))
