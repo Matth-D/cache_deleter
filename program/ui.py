@@ -34,6 +34,40 @@ class RootPercentageBar(QtWidgets.QProgressBar):
         self.setValue(value)
 
 
+class PopUpConfirmation(QtWidgets.QDialog):
+    def __init__(self):
+        super(PopUpConfirmation, self).__init__()
+        self.init_ui()
+        self.setGeometry(150, 140, 100, 100)
+        self.center_window()
+
+    def init_ui(self):
+        main_layout = QtWidgets.QVBoxLayout(self)
+        horizontal_layout = QtWidgets.QHBoxLayout()
+        warning_label = QtWidgets.QLabel(
+            "All files selected will be permmanently lost. Continue ?"
+        )
+        confirm_button = QtWidgets.QPushButton("Confirm", self)
+        cancel_button = QtWidgets.QPushButton("Cancel", self)
+
+        main_layout.addWidget(warning_label)
+        main_layout.addLayout(horizontal_layout)
+        horizontal_layout.addWidget(confirm_button)
+        horizontal_layout.addWidget(cancel_button)
+
+    def center_window(self):
+        """Centers window on screen."""
+        app_geo = self.frameGeometry()
+        center_point = (
+            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+        )
+        app_geo.moveCenter(center_point)
+        self.move(app_geo.topLeft())
+
+    def close(self):
+        self.close()
+
+
 class PopUpNoPath(QtWidgets.QDialog):
     def __init__(self):
         super(PopUpNoPath, self).__init__()
