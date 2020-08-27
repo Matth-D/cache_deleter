@@ -32,6 +32,7 @@ class RootPercentageBar(QtWidgets.QProgressBar):
     def __init__(self, value):
         super(RootPercentageBar, self).__init__()
         self.setValue(value)
+        self.setAlignment(QtCore.Qt.AlignCenter)
 
 
 class PopUpConfirmation(QtWidgets.QDialog):
