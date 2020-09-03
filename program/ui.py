@@ -173,6 +173,10 @@ class FileTree(QtWidgets.QTreeWidget):
 
         iterate_file(self.root_path, self)
 
+    def item_test(self, item):
+        name = item.text(0)
+        print(item, name)
+
 
 class CacheDeleter(QtWidgets.QDialog):
     def __init__(self):
@@ -269,9 +273,11 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold_button.setText("14")
-        self.root_path_button.setText(
-            "/home/matthieu/GIT/cache_deleter/program/test_folder"
-        )
+        # self.root_path_button.setText(
+        #     "/home/matthieu/GIT/cache_deleter/program/test_folder"
+        # )
+        self.root_path_button.setText("D:/GIT")
+        self.file_tree.itemClicked.connect(self.file_tree.item_test)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
