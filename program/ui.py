@@ -199,6 +199,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.setWindowTitle("Cache Deleter")
         self.center_window()
         self.time_threshold = None
+        self.list_item_selected = None
 
     def init_ui(self):
         """Init UI Layout."""
@@ -289,7 +290,9 @@ class CacheDeleter(QtWidgets.QDialog):
             "/Users/matthieu/GIT/cache_deleter/program/test_folder"
         )
         self.file_tree.itemClicked.connect(self.file_tree.get_item_path)
-        self.add_list.clicked.connect(self.add_item_list(self.file_tree.item_path))
+        self.add_list.clicked.connect(self.add_item_list)
+        self.remove_list.clicked.connect(self.remove_item_list)
+        self.list_view.itemClicked.connect(self.get_list_item_path)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
@@ -297,9 +300,23 @@ class CacheDeleter(QtWidgets.QDialog):
         self.folder_path = self.file_dialog.getExistingDirectory()
         self.root_path_button.setText(self.folder_path)
 
-    def add_item_list(self, item):
-        #        self.list_view.addItem(item)
-        print(item)
+    def add_item_list(self):
+        item = self.file_tree.item_path
+        list_items = []
+        for i in range(self.list_view.count()):
+            list_items.append(self.list_view.item(i))
+
+        if item in list_items:
+            return
+
+        self.list_view.addItem(item)
+
+    def remove_item_list(self):
+        row = self.list_view.row(self.list_item_selected)
+        self.list_view.takeItem(row)
+
+    def get_list_item_path(self, item):
+        self.list_item_selected = item
 
     def center_window(self):
         """Centers window on screen."""
