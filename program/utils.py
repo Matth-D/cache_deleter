@@ -40,3 +40,21 @@ def get_dir_size(path):
         else:
             byte_size_total += 0
     return byte_size_total
+
+
+# file sequence function
+#
+#
+# input > folder files content to loop on
+#
+# example > filesequence.1244.bgeo.sc
+#       > filesequence_other.012.jpg
+#           >output : [
+#               'filesequence.####.bgeo.sc (450-1321)',
+#               'filesequence_other.###.jpg (0-54)'
+#           ]
+#
+# first step > check if file is in a sequence
+#
+#
+# output > list of files with number of element in the name

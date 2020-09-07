@@ -12,12 +12,11 @@ import datetime
 from PySide2 import QtWidgets, QtGui, QtCore
 
 
-# 1- Browse for path in machine - DONE
-# 2- Select file or folder to be QTree root - DONE
-# 3- Hit Scan button to deploy fill QTree widget - Need to cancel Scan if tree already filled - DONE
 # 4- Use add or remove buttons to add items to delete list
 # 5- Reset all or Delete all
 # 6- When Delete button is pressed, prompt warning and ask for confirmation.
+# TODO:find a way to collapse file sequences
+# TODO: implement adding item to list and pass item as argument
 
 
 # Set constants
@@ -109,6 +108,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.time_delta = None
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
+        self.item_path = None
 
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
@@ -173,9 +173,21 @@ class FileTree(QtWidgets.QTreeWidget):
 
         iterate_file(self.root_path, self)
 
-    def item_test(self, item):
-        name = item.text(0)
-        print(item, name)
+    def get_item_path(self, item):
+        path_names = []
+
+        def iterate_item(item, path):
+            item_name = item.text(0)
+            path.insert(0, item_name)
+            parent_item = item.parent()
+            if parent_item is not None:
+                iterate_item(parent_item, path)
+            else:
+                return
+
+        iterate_item(item, path_names)
+        path_names.insert(0, self.root_path)
+        self.item_path = os.path.join(*path_names)
 
 
 class CacheDeleter(QtWidgets.QDialog):
@@ -273,17 +285,21 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold_button.setText("14")
-        # self.root_path_button.setText(
-        #     "/home/matthieu/GIT/cache_deleter/program/test_folder"
-        # )
-        self.root_path_button.setText("D:/GIT")
-        self.file_tree.itemClicked.connect(self.file_tree.item_test)
+        self.root_path_button.setText(
+            "/Users/matthieu/GIT/cache_deleter/program/test_folder"
+        )
+        self.file_tree.itemClicked.connect(self.file_tree.get_item_path)
+        self.add_list.clicked.connect(self.add_item_list(self.file_tree.item_path))
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
         self.file_dialog.setDirectory(HOME)
         self.folder_path = self.file_dialog.getExistingDirectory()
         self.root_path_button.setText(self.folder_path)
+
+    def add_item_list(self, item):
+        #        self.list_view.addItem(item)
+        print(item)
 
     def center_window(self):
         """Centers window on screen."""
