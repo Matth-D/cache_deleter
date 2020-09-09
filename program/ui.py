@@ -15,9 +15,8 @@ from PySide2 import QtWidgets, QtGui, QtCore
 # 4- Use add or remove buttons to add items to delete list
 # 5- Reset all or Delete all
 # 6- When Delete button is pressed, prompt warning and ask for confirmation.
-# TODO:find a way to collapse file sequences
-# TODO: implement adding item to list and pass item as argument
-
+# TODO:find a way to collapse file sequences fileseq - glob as second pass ?
+#   change iteration to only iterate over folder and for loop all of files ?
 
 # Set constants
 PLATFORM_NAME = platform.system().lower()
@@ -293,6 +292,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.add_list.clicked.connect(self.add_item_list)
         self.remove_list.clicked.connect(self.remove_item_list)
         self.list_view.itemClicked.connect(self.get_list_item_path)
+        self.reset_all_button.clicked.connect(self.reset_all)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
@@ -303,12 +303,10 @@ class CacheDeleter(QtWidgets.QDialog):
     def add_item_list(self):
         item = self.file_tree.item_path
         list_items = []
-        for i in range(self.list_view.count()):
-            list_items.append(self.list_view.item(i))
-
-        if item in list_items:
+        check_list = self.list_view.findItems(item, QtCore.Qt.MatchExactly)
+        check_list = [item.text() for item in check_list]
+        if item in check_list:
             return
-
         self.list_view.addItem(item)
 
     def remove_item_list(self):
@@ -317,6 +315,10 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def get_list_item_path(self, item):
         self.list_item_selected = item
+
+    def reset_all(self):
+        self.root_path_button.setText("")
+        self.file_tree.clear()
 
     def center_window(self):
         """Centers window on screen."""
