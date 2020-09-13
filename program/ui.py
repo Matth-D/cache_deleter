@@ -1,22 +1,13 @@
-# usr/bin/python3.8
-
 """Cache Deleter"""
 
 
 import sys
 import os
-import time
+import datetime
 import platform
 import utils
-import datetime
 from PySide2 import QtWidgets, QtGui, QtCore
 
-
-# 4- Use add or remove buttons to add items to delete list
-# 5- Reset all or Delete all
-# 6- When Delete button is pressed, prompt warning and ask for confirmation.
-# TODO:find a way to collapse file sequences fileseq - glob as second pass ?
-#   change iteration to only iterate over folder and for loop all of files ?
 
 # Set constants
 PLATFORM_NAME = platform.system().lower()
@@ -48,7 +39,6 @@ class PopUpConfirmation(QtWidgets.QDialog):
         )
         confirm_button = QtWidgets.QPushButton("Confirm", self)
         cancel_button = QtWidgets.QPushButton("Cancel", self)
-
         main_layout.addWidget(warning_label)
         main_layout.addLayout(horizontal_layout)
         horizontal_layout.addWidget(confirm_button)
@@ -126,53 +116,56 @@ class FileTree(QtWidgets.QTreeWidget):
             return
 
         def iterate_file(current_dir, current_item):
-
             today = datetime.date.today()
+            files = os.listdir(current_dir)
+            paths = [os.path.join(current_dir, file) for file in files]
+            dir_paths = [path for path in paths if os.path.isdir(path)]
 
-            for file in os.listdir(current_dir):
-                path = os.path.join(current_dir, file)
+            for path in dir_paths:
+                dir_name = os.path.basename(path)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
-                if byte_size == 0:
-                    root_prct = 0
-                else:
+
+                root_prct = 0
+                if byte_size != 0:
                     root_prct = round((byte_size / self.root_size) * 100)
+
                 m_time = os.path.getmtime(path)
                 m_date = datetime.datetime.fromtimestamp(m_time).date()
                 datetime_delta = datetime.timedelta(self.time_delta)
                 limit_date = today - datetime_delta
                 m_date_display = m_date.strftime("%d/%m/%Y")
 
-                if os.path.isdir(path):
-                    dir_item = QtWidgets.QTreeWidgetItem(current_item)
-                    dir_item.setText(0, file)
-                    dir_item.setText(1, file_size)
-                    progress = self.setItemWidget(
-                        dir_item, 2, RootPercentageBar(root_prct)
-                    )
-                    dir_item.setText(3, m_date_display)
-                    # if m_date < limit_date:
-                    #    dir_item.setText(3, "after")
-                    # else:
-                    #    dir_item.setText(3, "before")
-                    iterate_file(path, dir_item)
+                dir_item = QtWidgets.QTreeWidgetItem(current_item)
+                dir_item.setText(0, dir_name)
+                dir_item.setText(1, file_size)
+                progress = self.setItemWidget(dir_item, 2, RootPercentageBar(root_prct))
+                dir_item.setText(3, m_date_display)
+                # if m_date < limit_date:
+                #    dir_item.setText(3, "after")
+                # else:
+                #    dir_item.setText(3, "before")
+                iterate_file(path, dir_item)
 
-                else:
-                    file_item = QtWidgets.QTreeWidgetItem(current_item)
-                    file_item.setText(0, file)
-                    file_item.setText(1, file_size)
-                    progress = self.setItemWidget(
-                        file_item, 2, RootPercentageBar(root_prct)
-                    )
-                    file_item.setText(3, m_date_display)
-                    # if m_date < limit_date:
-                    #    file_item.setText(3, "after")
-                    # else:
-                    #    file_item.setText(3, "before")
+            file_paths = [path for path in paths if os.path.isfile(path)]
+            file_s_paths = [path for path in file_paths if not utils.is_sequence(path)]
+            file_sq_path = []
+
+            #  create list with file prefixes to collapse into a sequence
+            for path in file_paths:
+                if not utils.is_sequence(path):
+                    break
+                sq_prefix = path.split(".")[0]
+                if sq_prefix not in file_sq_path:
+                    file_sq_path.append(sq_prefix)
+            print(file_sq_path)
+            #  manipulate paths in file_s_paths to create sequence items
+            #  for path in file_sq_path:
 
         iterate_file(self.root_path, self)
 
     def get_item_path(self, item):
+
         path_names = []
 
         def iterate_item(item, path):

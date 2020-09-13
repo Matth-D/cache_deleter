@@ -1,5 +1,3 @@
-#!usr/bin/python3.8
-
 # folder1
 #    file1 bgeo sequence before 14 days
 #       folder4 deeper hierarchy to check path reconstruction
@@ -25,13 +23,14 @@ folder1 = os.path.join(root_folder, "folder1")
 folder2 = os.path.join(root_folder, "folder2")
 folder3 = os.path.join(root_folder, "folder3")
 folder4 = os.path.join(folder1, "folder4")
+folder_deep = os.path.join(folder4, "folder_deep")
 
 os.mkdir(root_folder)
 os.mkdir(folder1)
 os.mkdir(folder2)
 os.mkdir(folder3)
 os.mkdir(folder4)
-
+os.mkdir(folder_deep)
 
 for i in range(150):
     f1_name = "bgeo_sequence.{}.bgeo.sc".format(i)
@@ -77,3 +76,6 @@ for i in range(50):
     f4_name = "test_deep_file.{}.jpg".format(i)
     f4_path = os.path.join(folder4, f4_name)
     f4 = open(f4_path, "w")
+f4_name_single = "test_singlefile.1.jpg"
+f4_path_single = os.path.join(folder4, f4_name_single)
+f4_single = open(f4_path_single, "w")
