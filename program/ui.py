@@ -1,13 +1,13 @@
 """Cache Deleter"""
 
-
 import sys
 import os
 import datetime
 import platform
+import pathlib
+import glob
 import utils
 from PySide2 import QtWidgets, QtGui, QtCore
-
 
 # Set constants
 PLATFORM_NAME = platform.system().lower()
@@ -120,7 +120,6 @@ class FileTree(QtWidgets.QTreeWidget):
             files = os.listdir(current_dir)
             paths = [os.path.join(current_dir, file) for file in files]
             dir_paths = [path for path in paths if os.path.isdir(path)]
-
             for path in dir_paths:
                 dir_name = os.path.basename(path)
                 byte_size = utils.get_size(path)
@@ -150,7 +149,6 @@ class FileTree(QtWidgets.QTreeWidget):
             file_paths = [path for path in paths if os.path.isfile(path)]
             file_s_paths = [path for path in file_paths if not utils.is_sequence(path)]
             file_sq_path = []
-
             #  create list with file prefixes to collapse into a sequence
             for path in file_paths:
                 if not utils.is_sequence(path):
@@ -158,9 +156,52 @@ class FileTree(QtWidgets.QTreeWidget):
                 sq_prefix = path.split(".")[0]
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)
-            print(file_sq_path)
+
+#TODO: Try to find a function to avoid repeating steps of adding in the tree ?
+#       Different functio for dir and files ??
+
+            #add non sequence paths to tree
+            for path in file_s_paths:
+                file_name = os.path.basename(path)
+                byte_size = utils.get_size(path)
+                file_size = utils.byte_size_to_display(byte_size)
+
+                root_prct = 0
+                if byte_size != 0:
+                    root_prct = round((byte_size / self.root_size) * 100)
+
+                m_time = os.path.getmtime(path)
+                m_date = datetime.datetime.fromtimestamp(m_time).date()
+                datetime_delta = datetime.timedelta(self.time_delta)
+                limit_date = today - datetime_delta
+                m_date_display = m_date.strftime("%d/%m/%Y")
+
+                file_item = QtWidgets.QTreeWidgetItem(current_item)
+                file_item.setText(0, file_name)
+                file_item.setText(1, file_size)
+                progress = self.setItemWidget(file_item, 2, RootPercentageBar(root_prct))
+                file_item.setText(3, m_date_display)
+                # if m_date < limit_date:
+                #    dir_item.setText(3, "after")
+                # else:
+                #    dir_item.setText(3, "before")
+
             #  manipulate paths in file_s_paths to create sequence items
-            #  for path in file_sq_path:
+            for file in file_sq_path:
+                file_glob = glob.glob(file + "*")
+                file_sample = file_glob[0]
+                suffix = pathlib.Path(file_sample).suffixes[1:]
+                suffix = "".join(suffix)
+                min_frame = utils.get_frame(
+                    min(file_glob, key=lambda x: utils.get_frame(x))
+                )
+                max_frame = utils.get_frame(
+                    max(file_glob, key=lambda x: utils.get_frame(x))
+                )
+                padding = "#" * len(str(max_frame))
+                display_name = "{0}.{1}{2} | ({3}-{4})".format(
+                    file, padding, suffix, min_frame, max_frame
+                )
 
         iterate_file(self.root_path, self)
 

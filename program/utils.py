@@ -70,15 +70,15 @@ def get_frame(path):
 #  perform date operation based on one file from sequence
 #  output = file_hierarchy/file_name.####.suffix (fstart-fend)
 
-input_f = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence"
-file_glob = glob.glob(input_f + "*")
-file_sample = file_glob[0]
-suffix = pathlib.Path(file_sample).suffixes[1:]
-suffix = "".join(suffix)
-name = os.path.basename(input_f)
-min_frame = get_frame(min(file_glob, key=lambda x: get_frame(x)))
-max_frame = get_frame(max(file_glob, key=lambda x: get_frame(x)))
-padding = "#" * len(str(max_frame))
-input_f2 = "{0}.{1}{2} | ({3}-{4})".format(
-    input_f, padding, suffix, min_frame, max_frame
-)
+# input_f = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence"
+# file_glob = glob.glob(input_f + "*")
+# file_sample = file_glob[0]
+# suffix = pathlib.Path(file_sample).suffixes[1:]
+# suffix = "".join(suffix)
+# name = os.path.basename(input_f)
+# min_frame = get_frame(min(file_glob, key=lambda x: get_frame(x)))
+# max_frame = get_frame(max(file_glob, key=lambda x: get_frame(x)))
+# padding = "#" * len(str(max_frame))
+# input_f2 = "{0}.{1}{2} | ({3}-{4})".format(
+#     input_f, padding, suffix, min_frame, max_frame
+# )
