@@ -106,6 +106,33 @@ class FileTree(QtWidgets.QTreeWidget):
     def get_time_threshold(self):
         self.time_delta = int(self.time_threshold_button.text())
 
+    def add_item(self, path, current_item):
+        today = datetime.date.today()
+        item_name = os.path.basename(path)
+        byte_size = utils.get_size(path)
+        file_size = utils.byte_size_to_display(byte_size)
+
+        root_prct = 0
+        if byte_size != 0:
+            root_prct = round((byte_size / self.root_size) * 100)
+
+        m_time = os.path.getmtime(path)
+        m_date = datetime.datetime.fromtimestamp(m_time).date()
+        datetime_delta = datetime.timedelta(self.time_delta)
+        limit_date = today - datetime_delta
+        m_date_display = m_date.strftime("%d/%m/%Y")
+
+        item = QtWidgets.QTreeWidgetItem(current_item)
+        item.setText(0, item_name)
+        item.setText(1, file_size)
+        progress = self.setItemWidget(item, 2, RootPercentageBar(root_prct))
+        item.setText(3, m_date_display)
+        # if m_date < limit_date:
+        #     dir_item.setText(3, "after")
+        # else:
+        #     dir_item.setText(3, "before")
+        return item
+
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
@@ -114,36 +141,12 @@ class FileTree(QtWidgets.QTreeWidget):
         if self.root_path is None:
             self.pop_up.exec_()
             return
-
         def iterate_file(current_dir, current_item):
-            today = datetime.date.today()
             files = os.listdir(current_dir)
             paths = [os.path.join(current_dir, file) for file in files]
             dir_paths = [path for path in paths if os.path.isdir(path)]
             for path in dir_paths:
-                dir_name = os.path.basename(path)
-                byte_size = utils.get_size(path)
-                file_size = utils.byte_size_to_display(byte_size)
-
-                root_prct = 0
-                if byte_size != 0:
-                    root_prct = round((byte_size / self.root_size) * 100)
-
-                m_time = os.path.getmtime(path)
-                m_date = datetime.datetime.fromtimestamp(m_time).date()
-                datetime_delta = datetime.timedelta(self.time_delta)
-                limit_date = today - datetime_delta
-                m_date_display = m_date.strftime("%d/%m/%Y")
-
-                dir_item = QtWidgets.QTreeWidgetItem(current_item)
-                dir_item.setText(0, dir_name)
-                dir_item.setText(1, file_size)
-                progress = self.setItemWidget(dir_item, 2, RootPercentageBar(root_prct))
-                dir_item.setText(3, m_date_display)
-                # if m_date < limit_date:
-                #    dir_item.setText(3, "after")
-                # else:
-                #    dir_item.setText(3, "before")
+                dir_item = self.add_item(path, current_item)
                 iterate_file(path, dir_item)
 
             file_paths = [path for path in paths if os.path.isfile(path)]
@@ -157,11 +160,9 @@ class FileTree(QtWidgets.QTreeWidget):
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)
 
-#TODO: Try to find a function to avoid repeating steps of adding in the tree ?
-#       Different functio for dir and files ??
-
             #add non sequence paths to tree
             for path in file_s_paths:
+                today = datetime.date.today()
                 file_name = os.path.basename(path)
                 byte_size = utils.get_size(path)
                 file_size = utils.byte_size_to_display(byte_size)
@@ -187,21 +188,21 @@ class FileTree(QtWidgets.QTreeWidget):
                 #    dir_item.setText(3, "before")
 
             #  manipulate paths in file_s_paths to create sequence items
-            for file in file_sq_path:
-                file_glob = glob.glob(file + "*")
-                file_sample = file_glob[0]
-                suffix = pathlib.Path(file_sample).suffixes[1:]
-                suffix = "".join(suffix)
-                min_frame = utils.get_frame(
-                    min(file_glob, key=lambda x: utils.get_frame(x))
-                )
-                max_frame = utils.get_frame(
-                    max(file_glob, key=lambda x: utils.get_frame(x))
-                )
-                padding = "#" * len(str(max_frame))
-                display_name = "{0}.{1}{2} | ({3}-{4})".format(
-                    file, padding, suffix, min_frame, max_frame
-                )
+            # for file in file_sq_path:
+            #     file_glob = glob.glob(file + "*")
+            #     file_sample = file_glob[0]
+            #     suffix = pathlib.Path(file_sample).suffixes[1:]
+            #     suffix = "".join(suffix)
+            #     min_frame = utils.get_frame(
+            #         min(file_glob, key=lambda x: utils.get_frame(x))
+            #     )
+            #     max_frame = utils.get_frame(
+            #         max(file_glob, key=lambda x: utils.get_frame(x))
+            #     )
+            #     padding = "#" * len(str(max_frame))
+            #     display_name = "{0}.{1}{2} | ({3}-{4})".format(
+            #         file, padding, suffix, min_frame, max_frame
+            #     )
 
         iterate_file(self.root_path, self)
 
