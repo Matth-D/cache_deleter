@@ -106,7 +106,7 @@ class FileTree(QtWidgets.QTreeWidget):
     def get_time_threshold(self):
         self.time_delta = int(self.time_threshold_button.text())
 
-    def add_item(self, path, current_item):
+    def item_single(self, path, current_item):
         today = datetime.date.today()
         item_name = os.path.basename(path)
         byte_size = utils.get_size(path)
@@ -132,6 +132,47 @@ class FileTree(QtWidgets.QTreeWidget):
         # else:
         #     dir_item.setText(3, "before")
         return item
+    
+    def item_sequence(self, path_prefix, current_item):
+        file_glob = glob.glob(path_prefix + "*")
+        file_sample = file_glob[0]
+        suffix = pathlib.Path(file_sample).suffixes[1:]
+        suffix = "".join(suffix)
+        min_frame = utils.get_frame(
+            min(file_glob, key=lambda x: utils.get_frame(x))
+        )
+        max_frame = utils.get_frame(
+            max(file_glob, key=lambda x: utils.get_frame(x))
+        )
+        padding = "#" * len(str(max_frame))
+        item_name = "{0}.{1}{2} | ({3}-{4})".format(
+            path_prefix, padding, suffix, min_frame, max_frame
+        )
+        #creer function pour recuperer size d'une sequence a partir de file_glob
+        byte_size = utils.get_size(file_sample)
+        file_size = utils.byte_size_to_display(byte_size)
+
+        root_prct = 0
+        if byte_size != 0:
+            root_prct = round((byte_size / self.root_size) * 100)
+
+        m_time = os.path.getmtime(path)
+        m_date = datetime.datetime.fromtimestamp(m_time).date()
+        datetime_delta = datetime.timedelta(self.time_delta)
+        limit_date = today - datetime_delta
+        m_date_display = m_date.strftime("%d/%m/%Y")
+
+        item = QtWidgets.QTreeWidgetItem(current_item)
+        item.setText(0, item_name)
+        item.setText(1, file_size)
+        progress = self.setItemWidget(item, 2, RootPercentageBar(root_prct))
+        item.setText(3, m_date_display)
+        # if m_date < limit_date:
+        #     dir_item.setText(3, "after")
+        # else:
+        #     dir_item.setText(3, "before")
+        return item
+
 
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
@@ -146,7 +187,7 @@ class FileTree(QtWidgets.QTreeWidget):
             paths = [os.path.join(current_dir, file) for file in files]
             dir_paths = [path for path in paths if os.path.isdir(path)]
             for path in dir_paths:
-                dir_item = self.add_item(path, current_item)
+                dir_item = self.item_single(path, current_item)
                 iterate_file(path, dir_item)
 
             file_paths = [path for path in paths if os.path.isfile(path)]
@@ -162,32 +203,9 @@ class FileTree(QtWidgets.QTreeWidget):
 
             #add non sequence paths to tree
             for path in file_s_paths:
-                today = datetime.date.today()
-                file_name = os.path.basename(path)
-                byte_size = utils.get_size(path)
-                file_size = utils.byte_size_to_display(byte_size)
+                self.item_single(path, current_item)
 
-                root_prct = 0
-                if byte_size != 0:
-                    root_prct = round((byte_size / self.root_size) * 100)
-
-                m_time = os.path.getmtime(path)
-                m_date = datetime.datetime.fromtimestamp(m_time).date()
-                datetime_delta = datetime.timedelta(self.time_delta)
-                limit_date = today - datetime_delta
-                m_date_display = m_date.strftime("%d/%m/%Y")
-
-                file_item = QtWidgets.QTreeWidgetItem(current_item)
-                file_item.setText(0, file_name)
-                file_item.setText(1, file_size)
-                progress = self.setItemWidget(file_item, 2, RootPercentageBar(root_prct))
-                file_item.setText(3, m_date_display)
-                # if m_date < limit_date:
-                #    dir_item.setText(3, "after")
-                # else:
-                #    dir_item.setText(3, "before")
-
-            #  manipulate paths in file_s_paths to create sequence items
+            # manipulate paths in file_s_paths to create sequence items
             # for file in file_sq_path:
             #     file_glob = glob.glob(file + "*")
             #     file_sample = file_glob[0]

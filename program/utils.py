@@ -7,6 +7,15 @@ import pathlib
 
 
 def byte_size_to_display(byte_size):
+    """Return size in display formate from byte.
+
+    Args:
+        byte_size (int): file size in byte
+
+    Returns:
+        str: file size in display format dd/mm/yyyy
+    """
+
     byte_size *= 1.0
     byte_type = ["B", "KB", "MB", "GB", "TB"]
     for i, each in enumerate(byte_type):
@@ -19,16 +28,33 @@ def byte_size_to_display(byte_size):
 
 
 def get_size(path):
+    """Return path size either file or directory.
+
+    Args:
+        path (str): path to directory or file.
+
+    Returns:
+        int: directory or file size in bytes.
+    """
+
     if path == "":
         return
-    if os.path.isdir(path) is False:
+    file_size = get_dir_size(path)
+    if os.path.isfile(path):
         file_size = os.path.getsize(path)
-    else:
-        file_size = get_dir_size(path)
     return file_size
 
 
 def get_dir_size(path):
+    """Return dir size in bytes by scanning content.
+
+    Args:
+        path (str): path to directory
+
+    Returns:
+        int: dir size in bytes
+    """
+
     if path == "":
         return
     byte_size_total = 0
@@ -44,6 +70,15 @@ def get_dir_size(path):
 
 
 def is_sequence(path):
+    """Return if path is part of an image sequence or not.
+
+    Args:
+        path (str): path to file.
+
+    Returns:
+        bool: True or False if path is part of an image sequence.
+    """
+    #Simplifier cette fonction avec regex et trouver en fonction du pattern prefix . padding . autre chose
     path_split = path.split(".")
     glob_id = path_split[0] + "*"
     glob_list = glob.glob(glob_id)
@@ -54,21 +89,18 @@ def is_sequence(path):
 
 
 def get_frame(path):
+    """Return frame number from path.
+
+    Args:
+        path (str): path to file.
+
+    Returns:
+        int: frame number
+    """
     frame = str(pathlib.Path(path).suffixes[:1])
     frame = re.sub("[^0-9]", "", frame)
     return int(frame)
 
-
-#  input file name shortened
-#  perform glob to get one actual file from the sequence to extract info from
-#  isolate suffix
-#  get padding from highest frame number
-#  get smallest frame
-#  get highest frame
-#  replace frame by # * padding
-#  join everything
-#  perform date operation based on one file from sequence
-#  output = file_hierarchy/file_name.####.suffix (fstart-fend)
 
 # input_f = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence"
 # file_glob = glob.glob(input_f + "*")
@@ -82,3 +114,5 @@ def get_frame(path):
 # input_f2 = "{0}.{1}{2} | ({3}-{4})".format(
 #     input_f, padding, suffix, min_frame, max_frame
 # )
+file = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence.24.bgeo.sc"
+basename = os.path.basename(file)
