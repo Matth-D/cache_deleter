@@ -182,6 +182,7 @@ class FileTree(QtWidgets.QTreeWidget):
         if self.root_path is None:
             self.pop_up.exec_()
             return
+
         def iterate_file(current_dir, current_item):
             files = os.listdir(current_dir)
             paths = [os.path.join(current_dir, file) for file in files]
@@ -202,6 +203,7 @@ class FileTree(QtWidgets.QTreeWidget):
                     file_sq_path.append(sq_prefix)
 
             #add non sequence paths to tree
+            print(file_paths)
             for path in file_s_paths:
                 self.item_single(path, current_item)
 
