@@ -194,6 +194,7 @@ class FileTree(QtWidgets.QTreeWidget):
             file_paths = [path for path in paths if os.path.isfile(path)]
             file_s_paths = [path for path in file_paths if not utils.is_sequence(path)]
             file_sq_path = []
+
             #  create list with file prefixes to collapse into a sequence
             for path in file_paths:
                 if not utils.is_sequence(path):
@@ -202,8 +203,9 @@ class FileTree(QtWidgets.QTreeWidget):
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)
 
+#TODO: FIX THIS NotADirectoryError: [Errno 20] Not a directory: '/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/test_single_sequence21.png'
+
             #add non sequence paths to tree
-            print(file_paths)
             for path in file_s_paths:
                 self.item_single(path, current_item)
 

@@ -43,6 +43,16 @@ for i in range(150):
 os.utime(folder1, (mod_time, mod_time))
 
 for i in range(150):
+    f1_name = "test_single_sequence{}.png".format(i)
+    f1_path = os.path.join(folder1, f1_name)
+    f1 = open(f1_path, "w")
+    t_delta = datetime.timedelta(21)
+    date_dt = today - t_delta
+    mod_time = time.mktime(date_dt.timetuple())
+    os.utime(f1_path, (mod_time, mod_time))
+os.utime(folder1, (mod_time, mod_time))
+
+for i in range(150):
     f1_name = "bgeo_sequence_number2.{}.bgeo.sc".format(i)
     f1_path = os.path.join(folder1, f1_name)
     f1 = open(f1_path, "w")

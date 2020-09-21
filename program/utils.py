@@ -79,12 +79,10 @@ def is_sequence(path):
         bool: True or False if path is part of an image sequence.
     """
     basename = os.path.basename(path)
-    match = re.match(r"\S*[.]\d*[.]\S*", basename)
-
+    match = re.findall(r"[.]\d*[.]", basename)
     if match:
-        return True
-    else:
-        return False
+        match = match[-1]
+    return match
 
 def get_frame(path):
     """Return frame number from path.
@@ -98,5 +96,3 @@ def get_frame(path):
     frame = str(pathlib.Path(path).suffixes[:1])
     frame = re.sub("[^0-9]", "", frame)
     return int(frame)
-
-
