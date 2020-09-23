@@ -95,6 +95,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.root_path = None
         self.root_size = None
         self.time_delta = None
+        self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
         self.item_path = None
@@ -107,6 +108,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.time_delta = int(self.time_threshold_button.text())
 
     def item_single(self, path, current_item):
+
         today = datetime.date.today()
         item_name = os.path.basename(path)
         byte_size = utils.get_size(path)
@@ -125,7 +127,7 @@ class FileTree(QtWidgets.QTreeWidget):
         item = QtWidgets.QTreeWidgetItem(current_item)
         item.setText(0, item_name)
         item.setText(1, file_size)
-        progress = self.setItemWidget(item, 2, RootPercentageBar(root_prct))
+        self.setItemWidget(item, 2, RootPercentageBar(root_prct))
         item.setText(3, m_date_display)
         # if m_date < limit_date:
         #     dir_item.setText(3, "after")
@@ -134,8 +136,11 @@ class FileTree(QtWidgets.QTreeWidget):
         return item
     
     def item_sequence(self, path_prefix, current_item):
+
+        today = datetime.date.today()
         file_glob = glob.glob(path_prefix + "*")
         file_sample = file_glob[0]
+        basename = os.path.basename(path_prefix)
         suffix = pathlib.Path(file_sample).suffixes[1:]
         suffix = "".join(suffix)
         min_frame = utils.get_frame(
@@ -145,8 +150,8 @@ class FileTree(QtWidgets.QTreeWidget):
             max(file_glob, key=lambda x: utils.get_frame(x))
         )
         padding = "#" * len(str(max_frame))
-        item_name = "{0}.{1}{2} | ({3}-{4})".format(
-            path_prefix, padding, suffix, min_frame, max_frame
+        item_name = "{0}.{1}{2}  ({3}-{4})".format(
+            basename, padding, suffix, min_frame, max_frame
         )
         #creer function pour recuperer size d'une sequence a partir de file_glob
         byte_size = utils.get_size(file_sample)
@@ -156,7 +161,7 @@ class FileTree(QtWidgets.QTreeWidget):
         if byte_size != 0:
             root_prct = round((byte_size / self.root_size) * 100)
 
-        m_time = os.path.getmtime(path)
+        m_time = os.path.getmtime(file_sample)
         m_date = datetime.datetime.fromtimestamp(m_time).date()
         datetime_delta = datetime.timedelta(self.time_delta)
         limit_date = today - datetime_delta
@@ -165,7 +170,7 @@ class FileTree(QtWidgets.QTreeWidget):
         item = QtWidgets.QTreeWidgetItem(current_item)
         item.setText(0, item_name)
         item.setText(1, file_size)
-        progress = self.setItemWidget(item, 2, RootPercentageBar(root_prct))
+        self.setItemWidget(item, 2, RootPercentageBar(root_prct))
         item.setText(3, m_date_display)
         # if m_date < limit_date:
         #     dir_item.setText(3, "after")
@@ -203,12 +208,12 @@ class FileTree(QtWidgets.QTreeWidget):
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)
 
-#TODO: FIX THIS NotADirectoryError: [Errno 20] Not a directory: '/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/test_single_sequence21.png'
-
             #add non sequence paths to tree
             for path in file_s_paths:
                 self.item_single(path, current_item)
 
+            for path in file_sq_path:
+                self.item_sequence(path, current_item)
             # manipulate paths in file_s_paths to create sequence items
             # for file in file_sq_path:
             #     file_glob = glob.glob(file + "*")
@@ -261,7 +266,7 @@ class CacheDeleter(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.4),
+            round(self.screen_size.width() * 0.6),
             round(self.screen_size.height() * 0.8),
         )
         # Layout management
@@ -334,7 +339,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h4)
 
         # Signals and connect
-        self.extensions_list.setText("bgeo.sc,vdb,abc")
+        self.extensions_list.setText("bgeo.sc,vdb,abc,hip")
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(

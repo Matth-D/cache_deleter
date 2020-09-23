@@ -1,7 +1,6 @@
 """Utils module for Cache Deleter"""
 
 import os
-import glob
 import re
 import pathlib
 
@@ -19,7 +18,7 @@ def byte_size_to_display(byte_size):
     byte_size *= 1.0
     byte_type = ["B", "KB", "MB", "GB", "TB"]
     for i, each in enumerate(byte_type):
-        if byte_size >= (1024 * i) and byte_size < (1024 * (i + 1)):
+        if (1024 ** i) <= byte_size < (1024 ** (i + 1)):
             byte_size /= 1024 ** i
             byte_size = "{:.2f}".format(byte_size)
             byte_size = byte_size + " " + each
@@ -39,9 +38,9 @@ def get_size(path):
 
     if path == "":
         return
-    file_size = get_dir_size(path)
-    if os.path.isfile(path):
-        file_size = os.path.getsize(path)
+    file_size = os.path.getsize(path)
+    if os.path.isdir(path):
+        file_size = get_dir_size(path)
     return file_size
 
 
