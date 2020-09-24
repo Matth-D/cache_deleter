@@ -76,7 +76,7 @@ for i in range(75):
     f3_name = "other_sequence.{}.txt".format(i)
     f3_path = os.path.join(folder3, f3_name)
     f3 = open(f3_path, "w")
-    t_delta = datetime.timedelta(16)
+    t_delta = datetime.timedelta(10)
     date_dt = today - t_delta
     mod_time = time.mktime(date_dt.timetuple())
     os.utime(f2_path, (mod_time, mod_time))

@@ -16,7 +16,6 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = "~"
 
-#TODO: IMPLEMENT CSS DIFFERENCIATION BASED ON DATE ASK BENOIT
 
 class RootPercentageBar(QtWidgets.QProgressBar):
     def __init__(self, value):
@@ -130,10 +129,10 @@ class FileTree(QtWidgets.QTreeWidget):
         item.setText(1, file_size)
         self.setItemWidget(item, 2, RootPercentageBar(root_prct))
         item.setText(3, m_date_display)
-        # if m_date < limit_date:
-        #     dir_item.setText(3, "after")
-        # else:
-        #     dir_item.setText(3, "before")
+        if m_date < limit_date:
+            item.setForeground(0, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
+            item.setForeground(1, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
+            item.setForeground(3, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
         return item
     
     def item_sequence(self, path_prefix, current_item):
@@ -173,10 +172,10 @@ class FileTree(QtWidgets.QTreeWidget):
         item.setText(1, file_size)
         self.setItemWidget(item, 2, RootPercentageBar(root_prct))
         item.setText(3, m_date_display)
-        # if m_date < limit_date:
-        #     dir_item.setText(3, "after")
-        # else:
-        #     dir_item.setText(3, "before")
+        if m_date < limit_date:
+            item.setForeground(0, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
+            item.setForeground(1, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
+            item.setForeground(3, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
         return item
 
 
@@ -215,22 +214,6 @@ class FileTree(QtWidgets.QTreeWidget):
 
             for path in file_sq_path:
                 self.item_sequence(path, current_item)
-            # manipulate paths in file_s_paths to create sequence items
-            # for file in file_sq_path:
-            #     file_glob = glob.glob(file + "*")
-            #     file_sample = file_glob[0]
-            #     suffix = pathlib.Path(file_sample).suffixes[1:]
-            #     suffix = "".join(suffix)
-            #     min_frame = utils.get_frame(
-            #         min(file_glob, key=lambda x: utils.get_frame(x))
-            #     )
-            #     max_frame = utils.get_frame(
-            #         max(file_glob, key=lambda x: utils.get_frame(x))
-            #     )
-            #     padding = "#" * len(str(max_frame))
-            #     display_name = "{0}.{1}{2} | ({3}-{4})".format(
-            #         file, padding, suffix, min_frame, max_frame
-            #     )
 
         iterate_file(self.root_path, self)
 
@@ -262,6 +245,10 @@ class CacheDeleter(QtWidgets.QDialog):
         self.center_window()
         self.time_threshold = None
         self.list_item_selected = None
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
+        with open(path, "r") as stream:
+            css = stream.read()
+        self.setStyleSheet(css)
 
     def init_ui(self):
         """Init UI Layout."""
@@ -277,6 +264,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_h1 = QtWidgets.QHBoxLayout()
         self.root_path_button = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
+        self.browse_button.setObjectName("browse_button")
         self.layout_h1.addWidget(self.root_path_button)
         self.layout_h1.addWidget(self.browse_button)
 
@@ -293,6 +281,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.time_threshold_button.setMaximumWidth(60)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
+        self.scan_button.setObjectName("scan_button")
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
         self.layout_h2.addWidget(self.time_threshold_button)
