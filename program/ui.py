@@ -16,6 +16,7 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = "~"
 
+#TODO: IMPLEMENT CSS DIFFERENCIATION BASED ON DATE ASK BENOIT
 
 class RootPercentageBar(QtWidgets.QProgressBar):
     def __init__(self, value):

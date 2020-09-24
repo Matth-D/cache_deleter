@@ -92,6 +92,22 @@ def get_frame(path):
     Returns:
         int: frame number
     """
+
     frame = str(pathlib.Path(path).suffixes[:1])
     frame = re.sub("[^0-9]", "", frame)
     return int(frame)
+
+def get_suffix(path):
+    """Return the input path file extension.
+
+    Args:
+        path (str): path to file.
+
+    Returns:
+        str: file suffix
+    """
+    suffixes = pathlib.Path(path).suffixes
+    if is_sequence(path):
+        suffixes = suffixes[1:]
+    suffix = "".join(suffixes)
+    return suffix
