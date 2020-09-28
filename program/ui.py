@@ -110,7 +110,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.time_delta = int(self.time_threshold_button.text())
 
     def get_extensions_list(self):
-        self.extensions = self.extensions_list.text()
+        self.extensions = self.extensions_list.text().split(',')
 
     def item_single(self, path, current_item):
 
@@ -186,7 +186,6 @@ class FileTree(QtWidgets.QTreeWidget):
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
-        print(self.extensions)
         if top_level_item is not None:
             return
         if self.root_path is None:
@@ -335,8 +334,10 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h3)
         self.main_layout.addLayout(self.layout_h4)
 
+        self.main_layout.setStretch(2,5)
+        self.main_layout.setStretch(4,1)
+
         # Signals and connect
-        self.extensions_list.setText(".bgeo.sc,.vdb,.abc,.hip")
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(
@@ -345,6 +346,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.extensions_list.textChanged.connect(self.file_tree.get_extensions_list)
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold_button.setText("14")
+        self.extensions_list.setText(".bgeo.sc,.vdb,.abc,.hip")
         self.root_path_button.setText(
             "/Users/matthieu/GIT/cache_deleter/program/test_folder"
         )
