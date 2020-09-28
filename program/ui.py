@@ -92,9 +92,11 @@ class FileTree(QtWidgets.QTreeWidget):
         super(FileTree, self).__init__()
         self.root_path_button = kwargs.pop("root", HOME)
         self.time_threshold_button = kwargs.pop("time", None)
+        self.extensions_list = kwargs.pop("extensions", None)
         self.root_path = None
         self.root_size = None
         self.time_delta = None
+        self.extensions = None
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
@@ -106,6 +108,9 @@ class FileTree(QtWidgets.QTreeWidget):
 
     def get_time_threshold(self):
         self.time_delta = int(self.time_threshold_button.text())
+
+    def get_extensions_list(self):
+        self.extensions = self.extensions_list.text()
 
     def item_single(self, path, current_item):
 
@@ -178,10 +183,10 @@ class FileTree(QtWidgets.QTreeWidget):
             item.setForeground(3, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
         return item
 
-
     def fill_tree(self):
         top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
+        print(self.extensions)
         if top_level_item is not None:
             return
         if self.root_path is None:
@@ -290,7 +295,9 @@ class CacheDeleter(QtWidgets.QDialog):
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
         self.file_tree = FileTree(
-            self, root=self.root_path_button, time=self.time_threshold_button
+            self, root=self.root_path_button,
+            time=self.time_threshold_button,
+            extensions=self.extensions_list
         )
         self.layout_filetree.addWidget(self.file_tree)
 
@@ -329,12 +336,13 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h4)
 
         # Signals and connect
-        self.extensions_list.setText("bgeo.sc,vdb,abc,hip")
+        self.extensions_list.setText(".bgeo.sc,.vdb,.abc,.hip")
         self.browse_button.clicked.connect(self.select_file)
         self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(
             self.file_tree.get_time_threshold
         )
+        self.extensions_list.textChanged.connect(self.file_tree.get_extensions_list)
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
         self.time_threshold_button.setText("14")
         self.root_path_button.setText(
@@ -371,6 +379,7 @@ class CacheDeleter(QtWidgets.QDialog):
     def reset_all(self):
         self.root_path_button.setText("")
         self.file_tree.clear()
+        self.list_view.clear()
 
     def center_window(self):
         """Centers window on screen."""
