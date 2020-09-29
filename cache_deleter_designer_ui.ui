@@ -22,7 +22,7 @@
      <height>641</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,2,0,0">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,3,0,1">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
