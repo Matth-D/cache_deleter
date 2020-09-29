@@ -3,6 +3,7 @@
 import os
 import re
 import pathlib
+import glob
 
 
 def byte_size_to_display(byte_size):
@@ -111,3 +112,20 @@ def get_suffix(path):
         suffixes = suffixes[1:]
     suffix = "".join(suffixes)
     return suffix
+
+def delete_file(input_path):
+    """Delete the provided path, or sequence of paths.
+
+    Args:
+        input_path (str): path to the file.
+    """
+
+    if re.findall(r"\s[|]\s", os.path.basename(input_path)):
+        hasht = re.findall(r"[.]#*[.]", input_path)[0]
+        hasht = re.sub(r"#", "*", hasht)
+        path = input_path.split("|")[0].strip()
+        path = re.sub(r"[.]#*[.]", hasht, path)
+        glob_file = glob.glob(path)
+        [os.remove(path) for path in glob_file]
+    else:
+        os.remove(input_path) 

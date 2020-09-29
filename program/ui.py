@@ -16,6 +16,8 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = "~"
 
+###TODO: Create Popup deleting confirmation
+
 
 class RootPercentageBar(QtWidgets.QProgressBar):
     def __init__(self, value):
@@ -114,6 +116,10 @@ class FileTree(QtWidgets.QTreeWidget):
 
     def item_single(self, path, current_item):
 
+        suffix = utils.get_suffix(path)
+        if os.path.isfile(path) and suffix not in self.extensions:
+            return
+
         today = datetime.date.today()
         item_name = os.path.basename(path)
         byte_size = utils.get_size(path)
@@ -142,12 +148,13 @@ class FileTree(QtWidgets.QTreeWidget):
     
     def item_sequence(self, path_prefix, current_item):
 
-        today = datetime.date.today()
         file_glob = glob.glob(path_prefix + "*")
         file_sample = file_glob[0]
+        suffix = utils.get_suffix(file_sample)
+        if suffix not in self.extensions:
+            return
+        today = datetime.date.today()
         basename = os.path.basename(path_prefix)
-        suffix = pathlib.Path(file_sample).suffixes[1:]
-        suffix = "".join(suffix)
         min_frame = utils.get_frame(
             min(file_glob, key=lambda x: utils.get_frame(x))
         )
@@ -155,7 +162,7 @@ class FileTree(QtWidgets.QTreeWidget):
             max(file_glob, key=lambda x: utils.get_frame(x))
         )
         padding = "#" * len(str(max_frame))
-        item_name = "{0}.{1}{2}  ({3}-{4})".format(
+        item_name = "{0}.{1}{2} | ({3}-{4})".format(
             basename, padding, suffix, min_frame, max_frame
         )
         #creer function pour recuperer size d'une sequence a partir de file_glob
@@ -250,6 +257,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.time_threshold = None
         self.list_item_selected = None
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
+
         with open(path, "r") as stream:
             css = stream.read()
         self.setStyleSheet(css)
@@ -258,7 +266,7 @@ class CacheDeleter(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.6),
+            round(self.screen_size.width() * 0.5),
             round(self.screen_size.height() * 0.8),
         )
         # Layout management
@@ -318,13 +326,16 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_v2 = QtWidgets.QVBoxLayout()
         self.layout_h4.addLayout(self.layout_v2)
         self.delete_button = QtWidgets.QPushButton("Delete", self)
+        self.reset_list_button = QtWidgets.QPushButton("Reset List", self)
         self.reset_all_button = QtWidgets.QPushButton("Reset All", self)
-        self.delete_button.setMinimumHeight(80)
-        self.reset_all_button.setMinimumHeight(80)
+        self.delete_button.setMinimumHeight(50)
+        self.reset_list_button.setMinimumHeight(50)
+        self.reset_all_button.setMinimumHeight(50)
         self.vertical_spacer_1 = QtWidgets.QSpacerItem(
             20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding
         )
         self.layout_v2.addWidget(self.delete_button)
+        self.layout_v2.addWidget(self.reset_list_button)
         self.layout_v2.addWidget(self.reset_all_button)
         self.layout_v2.addItem(self.vertical_spacer_1)
 
@@ -354,6 +365,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.add_list.clicked.connect(self.add_item_list)
         self.remove_list.clicked.connect(self.remove_item_list)
         self.list_view.itemClicked.connect(self.get_list_item_path)
+        self.reset_list_button.clicked.connect(self.reset_list)
         self.reset_all_button.clicked.connect(self.reset_all)
 
     def select_file(self):
@@ -377,6 +389,9 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def get_list_item_path(self, item):
         self.list_item_selected = item
+
+    def reset_list(self):
+        self.list_view.clear()
 
     def reset_all(self):
         self.root_path_button.setText("")
