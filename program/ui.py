@@ -16,15 +16,12 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = "~"
 
-###TODO: Create Popup deleting confirmation
-
 
 class RootPercentageBar(QtWidgets.QProgressBar):
     def __init__(self, value):
         super(RootPercentageBar, self).__init__()
         self.setValue(value)
         self.setAlignment(QtCore.Qt.AlignCenter)
-
 
 class PopUpConfirmation(QtWidgets.QDialog):
     def __init__(self):
@@ -39,12 +36,14 @@ class PopUpConfirmation(QtWidgets.QDialog):
         warning_label = QtWidgets.QLabel(
             "All files selected will be permmanently lost. Continue ?"
         )
-        confirm_button = QtWidgets.QPushButton("Confirm", self)
-        cancel_button = QtWidgets.QPushButton("Cancel", self)
+        self.confirm_button = QtWidgets.QPushButton("Confirm", self)
+        self.cancel_button = QtWidgets.QPushButton("Cancel", self)
         main_layout.addWidget(warning_label)
         main_layout.addLayout(horizontal_layout)
-        horizontal_layout.addWidget(confirm_button)
-        horizontal_layout.addWidget(cancel_button)
+        horizontal_layout.addWidget(self.confirm_button)
+        horizontal_layout.addWidget(self.cancel_button)
+
+        self.cancel_button.clicked.connect(self.close_window)
 
     def center_window(self):
         """Centers window on screen."""
@@ -55,9 +54,11 @@ class PopUpConfirmation(QtWidgets.QDialog):
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
 
-    def close(self):
-        self.close()
+    def print_bite(self):
+        print('biiiiiite')
 
+    def close_window(self):
+        self.close()
 
 class PopUpNoPath(QtWidgets.QDialog):
     def __init__(self):
@@ -256,6 +257,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.center_window()
         self.time_threshold = None
         self.list_item_selected = None
+        self.pop_up_confirmation = PopUpConfirmation()
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
 
         with open(path, "r") as stream:
@@ -367,6 +369,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.list_view.itemClicked.connect(self.get_list_item_path)
         self.reset_list_button.clicked.connect(self.reset_list)
         self.reset_all_button.clicked.connect(self.reset_all)
+        self.delete_button.clicked.connect(self.exec_pop_up)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
@@ -382,6 +385,9 @@ class CacheDeleter(QtWidgets.QDialog):
         if item in check_list:
             return
         self.list_view.addItem(item)
+
+    def exec_pop_up(self):
+        self.pop_up_confirmation.exec()
 
     def remove_item_list(self):
         row = self.list_view.row(self.list_item_selected)
