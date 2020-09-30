@@ -4,6 +4,7 @@ import os
 import re
 import pathlib
 import glob
+import shutil
 
 
 def byte_size_to_display(byte_size):
@@ -84,6 +85,7 @@ def is_sequence(path):
         match = match[-1]
     return match
 
+
 def get_frame(path):
     """Return frame number from path.
 
@@ -97,6 +99,7 @@ def get_frame(path):
     frame = str(pathlib.Path(path).suffixes[:1])
     frame = re.sub("[^0-9]", "", frame)
     return int(frame)
+
 
 def get_suffix(path):
     """Return the input path file extension.
@@ -113,13 +116,16 @@ def get_suffix(path):
     suffix = "".join(suffixes)
     return suffix
 
+
 def delete_file(input_path):
     """Delete the provided path, or sequence of paths.
 
     Args:
         input_path (str): path to the file.
     """
-
+    if os.path.isdir(input_path):
+        shutil.rmtree(input_path)
+        return
     if re.findall(r"\s[|]\s", os.path.basename(input_path)):
         hasht = re.findall(r"[.]#*[.]", input_path)[0]
         hasht = re.sub(r"#", "*", hasht)

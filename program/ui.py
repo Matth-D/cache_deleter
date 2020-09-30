@@ -54,9 +54,6 @@ class PopUpConfirmation(QtWidgets.QDialog):
         app_geo.moveCenter(center_point)
         self.move(app_geo.topLeft())
 
-    def print_bite(self):
-        print('biiiiiite')
-
     def close_window(self):
         self.close()
 
@@ -251,13 +248,13 @@ class CacheDeleter(QtWidgets.QDialog):
     def __init__(self):
         super(CacheDeleter, self).__init__()
         self.root_path = None
+        self.pop_up_confirmation = PopUpConfirmation()
         self.init_ui()
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.setWindowTitle("Cache Deleter")
         self.center_window()
         self.time_threshold = None
         self.list_item_selected = None
-        self.pop_up_confirmation = PopUpConfirmation()
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
 
         with open(path, "r") as stream:
@@ -347,8 +344,8 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h3)
         self.main_layout.addLayout(self.layout_h4)
 
-        self.main_layout.setStretch(2,5)
-        self.main_layout.setStretch(4,1)
+        self.main_layout.setStretch(2, 5)
+        self.main_layout.setStretch(4, 1)
 
         # Signals and connect
         self.browse_button.clicked.connect(self.select_file)
@@ -370,6 +367,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.reset_list_button.clicked.connect(self.reset_list)
         self.reset_all_button.clicked.connect(self.reset_all)
         self.delete_button.clicked.connect(self.exec_pop_up)
+        self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
 
     def select_file(self):
         self.file_dialog = QtWidgets.QFileDialog()
@@ -379,7 +377,7 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def add_item_list(self):
         item = self.file_tree.item_path
-        list_items = []
+        # list_items = []
         check_list = self.list_view.findItems(item, QtCore.Qt.MatchExactly)
         check_list = [item.text() for item in check_list]
         if item in check_list:
@@ -388,6 +386,14 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def exec_pop_up(self):
         self.pop_up_confirmation.exec()
+
+    def delete_file_list(self):
+        for item_number in range(self.list_view.count()):
+            item_path = self.list_view.item(item_number).text()
+            utils.delete_file(item_path)
+        self.pop_up_confirmation.close_window()
+        self.file_tree.clear()
+        self.file_tree.fill_tree()
 
     def remove_item_list(self):
         row = self.list_view.row(self.list_item_selected)
