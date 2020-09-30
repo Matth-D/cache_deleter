@@ -4,7 +4,6 @@ import sys
 import os
 import datetime
 import platform
-import pathlib
 import glob
 import utils
 from PySide2 import QtWidgets, QtGui, QtCore
@@ -390,8 +389,12 @@ class CacheDeleter(QtWidgets.QDialog):
     def delete_file_list(self):
         for item_number in range(self.list_view.count()):
             item_path = self.list_view.item(item_number).text()
+            if not os.path.exists(item_path):
+                print('{0} not found or already deleted.'.format(os.path.basename(item_path)))
+                continue
             utils.delete_file(item_path)
         self.pop_up_confirmation.close_window()
+        self.list_view.clear()
         self.file_tree.clear()
         self.file_tree.fill_tree()
 
