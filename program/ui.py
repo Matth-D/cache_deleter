@@ -13,7 +13,8 @@ PLATFORM_NAME = platform.system().lower()
 if PLATFORM_NAME == "windows":
     HOME = os.environ.get("USERPROFILE")
 else:
-    HOME = "~"
+    HOME = os.path.expanduser("~")
+
 
 
 class RootPercentageBar(QtWidgets.QProgressBar):
@@ -100,10 +101,17 @@ class FileTree(QtWidgets.QTreeWidget):
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
         self.pop_up = PopUpNoPath()
         self.item_path = None
+        self.top_level_item = None
 
     def get_root_value(self):
         self.root_path = self.root_path_button.text()
+        if not os.path.exists(self.root_path):
+            print("File: {0} doesn't exist, check again".format(self.root_path))
+            return
         self.root_size = utils.get_size(self.root_path)
+    
+    def get_top_level_item(self):
+        self.top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
     def get_time_threshold(self):
         self.time_delta = int(self.time_threshold_button.text())
@@ -119,6 +127,8 @@ class FileTree(QtWidgets.QTreeWidget):
 
         today = datetime.date.today()
         item_name = os.path.basename(path)
+        if path == self.root_path:
+            item_name = self.root_path
         byte_size = utils.get_size(path)
         file_size = utils.byte_size_to_display(byte_size)
 
@@ -188,9 +198,8 @@ class FileTree(QtWidgets.QTreeWidget):
         return item
 
     def fill_tree(self):
-        top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
-        if top_level_item is not None:
+        if self.top_level_item is not None:
             return
         if self.root_path is None:
             self.pop_up.exec_()
@@ -223,7 +232,10 @@ class FileTree(QtWidgets.QTreeWidget):
             for path in file_sq_path:
                 self.item_sequence(path, current_item)
 
-        iterate_file(self.root_path, self)
+        root_item = self.item_single(self.root_path, self)
+        self.expandItem(root_item)
+        iterate_file(self.root_path, root_item)
+        # iterate_file(self.root_path, self)
 
     def get_item_path(self, item):
 
@@ -239,7 +251,8 @@ class FileTree(QtWidgets.QTreeWidget):
                 return
 
         iterate_item(item, path_names)
-        path_names.insert(0, self.root_path)
+        path_names.insert(0, self.top_level_item.text(0))
+        # path_names.insert(0, self.root_path)
         self.item_path = os.path.join(*path_names)
 
 
@@ -264,7 +277,7 @@ class CacheDeleter(QtWidgets.QDialog):
         """Init UI Layout."""
         self.screen_size = QtGui.QGuiApplication.primaryScreen().availableGeometry()
         self.app_size = (
-            round(self.screen_size.width() * 0.5),
+            round(self.screen_size.width() * 0.6),
             round(self.screen_size.height() * 0.8),
         )
         # Layout management
@@ -354,11 +367,12 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.extensions_list.textChanged.connect(self.file_tree.get_extensions_list)
         self.scan_button.clicked.connect(self.file_tree.fill_tree)
+        self.scan_button.clicked.connect(self.file_tree.get_top_level_item)
         self.time_threshold_button.setText("14")
         self.extensions_list.setText(".bgeo.sc,.vdb,.abc,.hip")
-        self.root_path_button.setText(
-            "/Users/matthieu/GIT/cache_deleter/program/test_folder"
-        )
+        # self.root_path_button.setText(
+        #     "/Users/matthieu/GIT/cache_deleter/program/test_folder"
+        # )
         self.file_tree.itemClicked.connect(self.file_tree.get_item_path)
         self.add_list.clicked.connect(self.add_item_list)
         self.remove_list.clicked.connect(self.remove_item_list)
@@ -369,10 +383,10 @@ class CacheDeleter(QtWidgets.QDialog):
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
 
     def select_file(self):
-        self.file_dialog = QtWidgets.QFileDialog()
-        self.file_dialog.setDirectory(HOME)
-        self.folder_path = self.file_dialog.getExistingDirectory()
-        self.root_path_button.setText(self.folder_path)
+        file_dialog = QtWidgets.QFileDialog()
+        file_dialog.setDirectory(HOME)
+        folder_path = file_dialog.getExistingDirectory()
+        self.root_path_button.setText(folder_path)
 
     def add_item_list(self):
         item = self.file_tree.item_path
