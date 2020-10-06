@@ -380,10 +380,8 @@ class CacheDeleter(QtWidgets.QDialog):
 
         # Appearance
         self.add_list.setObjectName("add_list")
-        icon_path = r"cache_deleter/program/icons/icon2.png"
-        self.add_list.setIcon(QtGui.QIcon(icon_path))
+        # self.add_list.setStyleSheet("background-image: url('/Users/matthieu/GIT/cache_deleter/program/icons/icon2.png')")
         self.remove_list.setObjectName("remove_list")
-        remove_list_icon = QtGui.QIcon(r"./icons/arrow_up.png")
 
     def select_file(self):
         file_dialog = QtWidgets.QFileDialog()
