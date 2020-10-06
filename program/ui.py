@@ -304,7 +304,6 @@ class CacheDeleter(QtWidgets.QDialog):
         self.time_threshold_button.setMaximumWidth(60)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
-        self.scan_button.setObjectName("scan_button")
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
         self.layout_h2.addWidget(self.time_threshold_button)
@@ -370,9 +369,6 @@ class CacheDeleter(QtWidgets.QDialog):
         self.scan_button.clicked.connect(self.file_tree.get_top_level_item)
         self.time_threshold_button.setText("14")
         self.extensions_list.setText(".bgeo.sc,.vdb,.abc,.hip")
-        # self.root_path_button.setText(
-        #     "/Users/matthieu/GIT/cache_deleter/program/test_folder"
-        # )
         self.file_tree.itemClicked.connect(self.file_tree.get_item_path)
         self.add_list.clicked.connect(self.add_item_list)
         self.remove_list.clicked.connect(self.remove_item_list)
@@ -381,6 +377,13 @@ class CacheDeleter(QtWidgets.QDialog):
         self.reset_all_button.clicked.connect(self.reset_all)
         self.delete_button.clicked.connect(self.exec_pop_up)
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
+
+        # Appearance
+        self.add_list.setObjectName("add_list")
+        icon_path = r"cache_deleter/program/icons/icon2.png"
+        self.add_list.setIcon(QtGui.QIcon(icon_path))
+        self.remove_list.setObjectName("remove_list")
+        remove_list_icon = QtGui.QIcon(r"./icons/arrow_up.png")
 
     def select_file(self):
         file_dialog = QtWidgets.QFileDialog()
