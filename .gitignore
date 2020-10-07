@@ -112,5 +112,4 @@ venv.bak/
 tempCodeRunnerFile.python
 tempCodeRunnerFile.py
 
-# test folder
-test*
+test_folder

@@ -15,6 +15,14 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = os.path.expanduser("~")
 
+# TODO: check pyside default warning dialog / save / message dialog
+
+
+def get_stylesheet():
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
+    with open(path, "r") as stream:
+        css = stream.read()
+    return css
 
 
 class RootPercentageBar(QtWidgets.QProgressBar):
@@ -23,12 +31,37 @@ class RootPercentageBar(QtWidgets.QProgressBar):
         self.setValue(value)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
-class PopUpConfirmation(QtWidgets.QDialog):
+
+class BaseDialog(QtWidgets.QDialog):
     def __init__(self):
-        super(PopUpConfirmation, self).__init__()
+        super(BaseDialog, self).__init__()
         self.init_ui()
         self.setGeometry(150, 140, 100, 100)
         self.center_window()
+        self.setStyleSheet(get_stylesheet())
+        self.center_window()
+        self.setStyleSheet(get_stylesheet())
+        self.setObjectName("pop_up")
+
+    def init_ui(self):
+        pass
+
+    def center_window(self):
+        """Centers window on screen"""
+        app_geo = self.frameGeometry()
+        center_point = (
+            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
+        )
+        app_geo.moveCenter(center_point)
+        self.move(app_geo.topLeft())
+
+    def close_window(self):
+        self.close()
+
+
+class PopUpConfirmation(BaseDialog):
+    def __init__(self):
+        super(PopUpConfirmation, self).__init__()
 
     def init_ui(self):
         main_layout = QtWidgets.QVBoxLayout(self)
@@ -45,46 +78,22 @@ class PopUpConfirmation(QtWidgets.QDialog):
 
         self.cancel_button.clicked.connect(self.close_window)
 
-    def center_window(self):
-        """Centers window on screen."""
-        app_geo = self.frameGeometry()
-        center_point = (
-            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
-        )
-        app_geo.moveCenter(center_point)
-        self.move(app_geo.topLeft())
 
-    def close_window(self):
-        self.close()
-
-class PopUpNoPath(QtWidgets.QDialog):
+class PopUpNoPath(BaseDialog):
     def __init__(self):
         super(PopUpNoPath, self).__init__()
-        self.init_ui()
-        self.setGeometry(150, 140, 100, 100)
-        self.center_window()
 
     def init_ui(self):
         main_layout = QtWidgets.QVBoxLayout(self)
-        warning_label = QtWidgets.QLabel("Please enter a root path before scanning")
+        warning_label = QtWidgets.QLabel(
+            "Please enter a valid root path before scanning"
+        )
         ok_button = QtWidgets.QPushButton("OK", self)
 
         main_layout.addWidget(warning_label)
         main_layout.addWidget(ok_button)
 
         ok_button.clicked.connect(self.close_window)
-
-    def center_window(self):
-        """Centers window on screen."""
-        app_geo = self.frameGeometry()
-        center_point = (
-            QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
-        )
-        app_geo.moveCenter(center_point)
-        self.move(app_geo.topLeft())
-
-    def close_window(self):
-        self.close()
 
 
 class FileTree(QtWidgets.QTreeWidget):
@@ -99,7 +108,6 @@ class FileTree(QtWidgets.QTreeWidget):
         self.extensions = None
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.setHeaderLabels(["Name", "File Size", "root %", "Date Modified"])
-        self.pop_up = PopUpNoPath()
         self.item_path = None
         self.top_level_item = None
 
@@ -109,7 +117,7 @@ class FileTree(QtWidgets.QTreeWidget):
             print("File: {0} doesn't exist, check again".format(self.root_path))
             return
         self.root_size = utils.get_size(self.root_path)
-    
+
     def get_top_level_item(self):
         self.top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
@@ -117,7 +125,7 @@ class FileTree(QtWidgets.QTreeWidget):
         self.time_delta = int(self.time_threshold_button.text())
 
     def get_extensions_list(self):
-        self.extensions = self.extensions_list.text().split(',')
+        self.extensions = self.extensions_list.text().split(",")
 
     def item_single(self, path, current_item):
 
@@ -152,7 +160,7 @@ class FileTree(QtWidgets.QTreeWidget):
             item.setForeground(1, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
             item.setForeground(3, QtGui.QBrush(QtGui.QColor(255, 15, 15)))
         return item
-    
+
     def item_sequence(self, path_prefix, current_item):
 
         file_glob = glob.glob(path_prefix + "*")
@@ -162,17 +170,13 @@ class FileTree(QtWidgets.QTreeWidget):
             return
         today = datetime.date.today()
         basename = os.path.basename(path_prefix)
-        min_frame = utils.get_frame(
-            min(file_glob, key=lambda x: utils.get_frame(x))
-        )
-        max_frame = utils.get_frame(
-            max(file_glob, key=lambda x: utils.get_frame(x))
-        )
+        min_frame = utils.get_frame(min(file_glob, key=lambda x: utils.get_frame(x)))
+        max_frame = utils.get_frame(max(file_glob, key=lambda x: utils.get_frame(x)))
         padding = "#" * len(str(max_frame))
         item_name = "{0}.{1}{2} | ({3}-{4})".format(
             basename, padding, suffix, min_frame, max_frame
         )
-        #creer function pour recuperer size d'une sequence a partir de file_glob
+        # creer function pour recuperer size d'une sequence a partir de file_glob
         byte_size = utils.get_size(file_sample)
         file_size = utils.byte_size_to_display(byte_size)
 
@@ -199,10 +203,14 @@ class FileTree(QtWidgets.QTreeWidget):
 
     def fill_tree(self):
 
+        pop_up = PopUpNoPath()
+        if not os.path.exists(self.root_path):
+            pop_up.exec_()
+            return
         if self.top_level_item is not None:
             return
         if self.root_path is None:
-            self.pop_up.exec_()
+            pop_up.exec_()
             return
 
         def iterate_file(current_dir, current_item):
@@ -225,7 +233,7 @@ class FileTree(QtWidgets.QTreeWidget):
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)
 
-            #add non sequence paths to tree
+            # add non sequence paths to tree
             for path in file_s_paths:
                 self.item_single(path, current_item)
 
@@ -235,7 +243,6 @@ class FileTree(QtWidgets.QTreeWidget):
         root_item = self.item_single(self.root_path, self)
         self.expandItem(root_item)
         iterate_file(self.root_path, root_item)
-        # iterate_file(self.root_path, self)
 
     def get_item_path(self, item):
 
@@ -252,7 +259,6 @@ class FileTree(QtWidgets.QTreeWidget):
 
         iterate_item(item, path_names)
         path_names.insert(0, self.top_level_item.text(0))
-        # path_names.insert(0, self.root_path)
         self.item_path = os.path.join(*path_names)
 
 
@@ -267,11 +273,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.center_window()
         self.time_threshold = None
         self.list_item_selected = None
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
-
-        with open(path, "r") as stream:
-            css = stream.read()
-        self.setStyleSheet(css)
+        self.setStyleSheet(get_stylesheet())
 
     def init_ui(self):
         """Init UI Layout."""
@@ -301,7 +303,6 @@ class CacheDeleter(QtWidgets.QDialog):
             )
         )
         self.time_threshold_button.setInputMask("999")
-        self.time_threshold_button.setMaximumWidth(60)
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
@@ -312,21 +313,22 @@ class CacheDeleter(QtWidgets.QDialog):
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
         self.file_tree = FileTree(
-            self, root=self.root_path_button,
+            self,
+            root=self.root_path_button,
             time=self.time_threshold_button,
-            extensions=self.extensions_list
+            extensions=self.extensions_list,
         )
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
         self.add_list = QtWidgets.QPushButton("", self)
-        self.remove_list = QtWidgets.QPushButton("Remove", self)
+        self.remove_list = QtWidgets.QPushButton("", self)
         self.horizontal_spacer_1 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
         )
         self.layout_h3.addWidget(self.add_list)
         self.layout_h3.addWidget(self.remove_list)
-        self.layout_h3.addItem(self.horizontal_spacer_1)
+        # self.layout_h3.addItem(self.horizontal_spacer_1)
         self.layout_h3.setSpacing(50)
 
         self.layout_h4 = QtWidgets.QHBoxLayout()
@@ -355,12 +357,10 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h3)
         self.main_layout.addLayout(self.layout_h4)
 
-        self.main_layout.setStretch(2, 5)
-        self.main_layout.setStretch(4, 1)
-
         # Signals and connect
         self.browse_button.clicked.connect(self.select_file)
-        self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
+        # self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
+        self.scan_button.clicked.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(
             self.file_tree.get_time_threshold
         )
@@ -379,12 +379,28 @@ class CacheDeleter(QtWidgets.QDialog):
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
 
         # Appearance
+        self.main_layout.setStretch(2, 5)
+        self.main_layout.setStretch(4, 1)
+
+        self.time_threshold_button.setMaximumWidth(60)
+
+        self.setObjectName("main_window")
+
+        self.file_tree.setObjectName("file_tree")
+        self.list_view.setObjectName("list_view")
+
+        self.pop_up_confirmation.setObjectName("pop_up")
+
         self.add_list.setObjectName("add_list")
-        iconpath = os.path.abspath("./icons/icon_test.png")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(iconpath))
-        self.add_list.setIcon(icon)
+        add_list_iconpath = os.path.join(
+            os.path.dirname(__file__), "icons/arrow_down.png"
+        )
+        self.add_list.setIcon(QtGui.QIcon(add_list_iconpath))
         self.remove_list.setObjectName("remove_list")
+        remove_list_iconpath = os.path.join(
+            os.path.dirname(__file__), "icons/arrow_up.png"
+        )
+        self.remove_list.setIcon(QtGui.QIcon(remove_list_iconpath))
 
     def select_file(self):
         file_dialog = QtWidgets.QFileDialog()
@@ -408,7 +424,11 @@ class CacheDeleter(QtWidgets.QDialog):
         for item_number in range(self.list_view.count()):
             item_path = self.list_view.item(item_number).text()
             if not os.path.exists(item_path):
-                print('{0} not found or already deleted.'.format(os.path.basename(item_path)))
+                print(
+                    "{0} not found or already deleted.".format(
+                        os.path.basename(item_path)
+                    )
+                )
                 continue
             utils.delete_file(item_path)
         self.pop_up_confirmation.close_window()
@@ -444,7 +464,7 @@ class CacheDeleter(QtWidgets.QDialog):
 def main():
     """Set main program function."""
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyle('Fusion')
+    app.setStyle("Fusion")
     cache_deleter = CacheDeleter()
     cache_deleter.show()
     sys.exit(app.exec_())

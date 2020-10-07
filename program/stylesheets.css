@@ -1,10 +1,25 @@
-QPushButton#add_list {
-    /* background-image: url('/Users/matthieu/GIT/cache_deleter/program/icons/icon_test.png');
-    background-image-size: 2;
-    background-repeat: no-repeat;
-    background-position: center; */
-    background-color: red;
+QPushButton {
+    background-color: #1A191A;
+    color: white;
+    border-width: 1px;
 }
-QPushButton#remove_list {
-    background-color:green
+QDialog#main_window {
+    background-color: #333233;
+}
+QDialog#pop_up{
+    background-color: #333233;
+}
+QTreeWidget#file_tree {
+    background-color:#1A191A;
+} 
+QListWidget#list_view {
+    background-color:#1A191A;
+}
+QLineEdit{
+    background-color:#1A191A;
+    color: white;
+}
+QHeaderView{
+    background-color:#1A191A;
+    color: white;
 }
