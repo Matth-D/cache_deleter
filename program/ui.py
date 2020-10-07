@@ -39,8 +39,6 @@ class BaseDialog(QtWidgets.QDialog):
         self.setGeometry(150, 140, 100, 100)
         self.center_window()
         self.setStyleSheet(get_stylesheet())
-        self.center_window()
-        self.setStyleSheet(get_stylesheet())
         self.setObjectName("pop_up")
 
     def init_ui(self):
