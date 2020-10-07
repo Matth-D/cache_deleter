@@ -1,9 +1,10 @@
-/* QPushButton#add_list {
-    background-image: url('/Users/matthieu/GIT/cache_deleter/program/icons/icon_test.png');
+QPushButton#add_list {
+    /* background-image: url('/Users/matthieu/GIT/cache_deleter/program/icons/icon_test.png');
     background-image-size: 2;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center; */
+    background-color: red;
 }
 QPushButton#remove_list {
     background-color:green
-} */
+}

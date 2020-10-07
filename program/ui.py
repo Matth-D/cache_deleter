@@ -379,7 +379,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
 
         # Appearance
-        # self.add_list.setObjectName("add_list")
+        self.add_list.setObjectName("add_list")
         iconpath = os.path.abspath("./icons/icon_test.png")
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(iconpath))
