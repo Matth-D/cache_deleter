@@ -319,7 +319,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.layout_filetree.addWidget(self.file_tree)
 
         self.layout_h3 = QtWidgets.QHBoxLayout()
-        self.add_list = QtWidgets.QPushButton("Add", self)
+        self.add_list = QtWidgets.QPushButton("", self)
         self.remove_list = QtWidgets.QPushButton("Remove", self)
         self.horizontal_spacer_1 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
@@ -379,8 +379,11 @@ class CacheDeleter(QtWidgets.QDialog):
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
 
         # Appearance
-        self.add_list.setObjectName("add_list")
-        # self.add_list.setStyleSheet("background-image: url('/Users/matthieu/GIT/cache_deleter/program/icons/icon2.png')")
+        # self.add_list.setObjectName("add_list")
+        iconpath = os.path.abspath("./icons/icon_test.png")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(iconpath))
+        self.add_list.setIcon(icon)
         self.remove_list.setObjectName("remove_list")
 
     def select_file(self):
@@ -441,6 +444,7 @@ class CacheDeleter(QtWidgets.QDialog):
 def main():
     """Set main program function."""
     app = QtWidgets.QApplication(sys.argv)
+    app.setStyle('Fusion')
     cache_deleter = CacheDeleter()
     cache_deleter.show()
     sys.exit(app.exec_())
