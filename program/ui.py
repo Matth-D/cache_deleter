@@ -19,6 +19,11 @@ else:
 
 
 def get_stylesheet():
+    """Return CSS stylesheet.
+
+    Returns:
+        str: stylesheet.css file.
+    """
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stylesheets.css")
     with open(path, "r") as stream:
         css = stream.read()
@@ -26,6 +31,12 @@ def get_stylesheet():
 
 
 class RootPercentageBar(QtWidgets.QProgressBar):
+    """Percentage bar for item class.
+
+    Args:
+        QtWidgets.QProgressBar (class): QProgressBar class.
+    """
+
     def __init__(self, value):
         super(RootPercentageBar, self).__init__()
         self.setValue(value)
@@ -33,6 +44,12 @@ class RootPercentageBar(QtWidgets.QProgressBar):
 
 
 class BaseDialog(QtWidgets.QDialog):
+    """Base Dialog class for pop ups.
+
+    Args:
+        QtWidgets (class): QDialog class inheritance.
+    """
+
     def __init__(self):
         super(BaseDialog, self).__init__()
         self.init_ui()
@@ -42,10 +59,13 @@ class BaseDialog(QtWidgets.QDialog):
         self.setObjectName("pop_up")
 
     def init_ui(self):
+        """Init pop up UI."""
+
         pass
 
     def center_window(self):
         """Centers window on screen"""
+
         app_geo = self.frameGeometry()
         center_point = (
             QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
@@ -54,10 +74,17 @@ class BaseDialog(QtWidgets.QDialog):
         self.move(app_geo.topLeft())
 
     def close_window(self):
+        """Close pop up window."""
+
         self.close()
 
 
 class PopUpConfirmation(BaseDialog):
+    """Confirmation Pop up upon file deletion.
+
+    Args:
+        BaseDialog (class): Base Dialog class inheritance.
+    """
     def __init__(self):
         super(PopUpConfirmation, self).__init__()
 
@@ -261,6 +288,12 @@ class FileTree(QtWidgets.QTreeWidget):
 
 
 class CacheDeleter(QtWidgets.QDialog):
+    """Cache Deleter Program main class
+
+    Args:
+        QtWidgets.QDialog (class): QtWidgets.QDialog inheritance.
+    """
+
     def __init__(self):
         super(CacheDeleter, self).__init__()
         self.root_path = None
@@ -401,12 +434,16 @@ class CacheDeleter(QtWidgets.QDialog):
         self.remove_list.setIcon(QtGui.QIcon(remove_list_iconpath))
 
     def select_file(self):
+        """Create File browser and set selected directory to root path parameter."""
+
         file_dialog = QtWidgets.QFileDialog()
         file_dialog.setDirectory(HOME)
         folder_path = file_dialog.getExistingDirectory()
         self.root_path_button.setText(folder_path)
 
     def add_item_list(self):
+        """Add selected item to list view."""
+
         item = self.file_tree.item_path
         # list_items = []
         check_list = self.list_view.findItems(item, QtCore.Qt.MatchExactly)
@@ -416,9 +453,13 @@ class CacheDeleter(QtWidgets.QDialog):
         self.list_view.addItem(item)
 
     def exec_pop_up(self):
+        """Open pop up confirmation."""
+
         self.pop_up_confirmation.exec()
 
     def delete_file_list(self):
+        """Delete systems files added in the list."""
+
         for item_number in range(self.list_view.count()):
             item_path = self.list_view.item(item_number).text()
             if not os.path.exists(item_path):
@@ -435,22 +476,34 @@ class CacheDeleter(QtWidgets.QDialog):
         self.file_tree.fill_tree()
 
     def remove_item_list(self):
+        """Remove item from list view."""
+
         row = self.list_view.row(self.list_item_selected)
         self.list_view.takeItem(row)
 
     def get_list_item_path(self, item):
+        """Set selected item variable from list clicked item.
+
+        Args:
+            item (obj): list clicked item object.
+        """
         self.list_item_selected = item
 
     def reset_list(self):
+        """Clear list view parameters."""
+
         self.list_view.clear()
 
     def reset_all(self):
+        """Clear all input parameters."""
+
         self.root_path_button.setText("")
         self.file_tree.clear()
         self.list_view.clear()
 
     def center_window(self):
         """Centers window on screen."""
+
         app_geo = self.frameGeometry()
         center_point = (
             QtGui.QGuiApplication.primaryScreen().availableGeometry().center()
@@ -461,6 +514,7 @@ class CacheDeleter(QtWidgets.QDialog):
 
 def main():
     """Set main program function."""
+
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Fusion")
     cache_deleter = CacheDeleter()
