@@ -1,11 +1,4 @@
-# folder1
-#    file1 bgeo sequence before 14 days
-#       folder4 deeper hierarchy to check path reconstruction
-#           test_file not important
-# folder 2
-#    file2 vdb sequence after 14 days
-# folder 3
-#   file 3 not bgeo abc or vdb
+"""Test file to create folder hierarchy to test out Cache deleter with single files and sequences of various file types"""
 
 
 import os

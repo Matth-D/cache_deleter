@@ -8,14 +8,13 @@ import glob
 import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
+
 # Set constants
 PLATFORM_NAME = platform.system().lower()
 if PLATFORM_NAME == "windows":
     HOME = os.environ.get("USERPROFILE")
 else:
     HOME = os.path.expanduser("~")
-
-# TODO: check pyside default warning dialog / save / message dialog
 
 
 def get_stylesheet():
@@ -47,7 +46,7 @@ class BaseDialog(QtWidgets.QDialog):
     """Base Dialog class for pop ups.
 
     Args:
-        QtWidgets (class): QDialog class inheritance.
+        QtWidgets.QDialog (class): QDialog class inheritance.
     """
 
     def __init__(self):
@@ -85,10 +84,13 @@ class PopUpConfirmation(BaseDialog):
     Args:
         BaseDialog (class): Base Dialog class inheritance.
     """
+
     def __init__(self):
         super(PopUpConfirmation, self).__init__()
 
     def init_ui(self):
+        """Init PopUpConfirmation UI."""
+
         main_layout = QtWidgets.QVBoxLayout(self)
         horizontal_layout = QtWidgets.QHBoxLayout()
         warning_label = QtWidgets.QLabel(
@@ -105,10 +107,18 @@ class PopUpConfirmation(BaseDialog):
 
 
 class PopUpNoPath(BaseDialog):
+    """Pop Up empty path class.
+
+    Args:
+        BaseDialog (class): Base Dialog class inheritance.
+    """
+
     def __init__(self):
         super(PopUpNoPath, self).__init__()
 
     def init_ui(self):
+        """Init PopUpNoPath UI."""
+
         main_layout = QtWidgets.QVBoxLayout(self)
         warning_label = QtWidgets.QLabel(
             "Please enter a valid root path before scanning"
@@ -122,6 +132,12 @@ class PopUpNoPath(BaseDialog):
 
 
 class FileTree(QtWidgets.QTreeWidget):
+    """File tree browser class.
+
+    Args:
+        QtWidgets.QTreeWidget (class): QTreeWidget class inheritance.
+    """
+
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
         self.root_path_button = kwargs.pop("root", HOME)
@@ -137,6 +153,8 @@ class FileTree(QtWidgets.QTreeWidget):
         self.top_level_item = None
 
     def get_root_value(self):
+        """Set root path value from input parameter."""
+
         self.root_path = self.root_path_button.text()
         if not os.path.exists(self.root_path):
             print("File: {0} doesn't exist, check again".format(self.root_path))
@@ -144,15 +162,30 @@ class FileTree(QtWidgets.QTreeWidget):
         self.root_size = utils.get_size(self.root_path)
 
     def get_top_level_item(self):
+        """Set top_level_item variable from file tree."""
+
         self.top_level_item = QtWidgets.QTreeWidget.topLevelItem(self, 0)
 
     def get_time_threshold(self):
+        """Set time threshold variable from file tree."""
+
         self.time_delta = int(self.time_threshold_button.text())
 
     def get_extensions_list(self):
+        """Set file extensions variable from input parameter."""
+
         self.extensions = self.extensions_list.text().split(",")
 
     def item_single(self, path, current_item):
+        """Add item to the tree if item not sequence.
+
+        Args:
+            path (str): path of provided item.
+            current_item (obj): parent item in tree widget.
+
+        Returns:
+            item: added tree single item.
+        """
 
         suffix = utils.get_suffix(path)
         if os.path.isfile(path) and suffix not in self.extensions:
@@ -187,6 +220,15 @@ class FileTree(QtWidgets.QTreeWidget):
         return item
 
     def item_sequence(self, path_prefix, current_item):
+        """Add item to the tree if item is a file sequence.
+
+        Args:
+            path_prefix (str): path of provided item.
+            current_item (obj): parent item in tree widget.
+
+        Returns:
+            item: added tree sequence item.
+        """
 
         file_glob = glob.glob(path_prefix + "*")
         file_sample = file_glob[0]
@@ -227,6 +269,7 @@ class FileTree(QtWidgets.QTreeWidget):
         return item
 
     def fill_tree(self):
+        """Fill tree widget scanning folder hierarchy starting from root path"""
 
         pop_up = PopUpNoPath()
         if not os.path.exists(self.root_path):
@@ -239,6 +282,13 @@ class FileTree(QtWidgets.QTreeWidget):
             return
 
         def iterate_file(current_dir, current_item):
+            """Iterate down the file hierarchy.
+
+            Args:
+                current_dir (str): path of the current parent directory.
+                current_item (obj): current parent item in tree widget structure.
+            """
+
             files = os.listdir(current_dir)
             paths = [os.path.join(current_dir, file) for file in files]
             dir_paths = [path for path in paths if os.path.isdir(path)]
@@ -270,6 +320,11 @@ class FileTree(QtWidgets.QTreeWidget):
         iterate_file(self.root_path, root_item)
 
     def get_item_path(self, item):
+        """Set clicked item path variable.
+
+        Args:
+            item (obj): tree widget clicked item.
+        """
 
         path_names = []
 
