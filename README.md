@@ -1,7 +1,7 @@
 ### REQUIREMENTS
 
 Python 3+ 
-PySide2 --> `pip install PySide2` in a terminal
+PySide2 --> `pip3 install PySide2` in a terminal
 
 ### HOW TO USE 
 
