@@ -6,6 +6,7 @@ PySide2 --> `pip install PySide2` in a terminal
 ### HOW TO USE 
 
 In a terminal execute the cache_deleter.py scripts included at the package root with python.
+
 `python3 cache_deleter.py`
 
 Pick a root path either by typing it in the top bar or browsing through the file system clicking the Browse button.
