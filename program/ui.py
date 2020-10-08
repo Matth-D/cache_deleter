@@ -5,7 +5,7 @@ import os
 import datetime
 import platform
 import glob
-import utils
+from . import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
 
