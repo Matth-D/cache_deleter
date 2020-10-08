@@ -1,7 +1,6 @@
-"""Executable for shortest pathfinding visualizer.
+"""Executable for cache deleter program.
 
 :Author: Matthieu Druaud
-Thanks to Benoit Gielly for the tips !
 """
 
 

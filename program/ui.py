@@ -131,6 +131,29 @@ class PopUpNoPath(BaseDialog):
         ok_button.clicked.connect(self.close_window)
 
 
+class PopUpEmptyList(BaseDialog):
+    """Pop Up empty list class.
+
+    Args:
+        BaseDialog (class): Base Dialog class inheritance.
+    """
+
+    def __init__(self):
+        super(PopUpEmptyList, self).__init__()
+
+    def init_ui(self):
+        """Init PopUpNoPath UI."""
+
+        main_layout = QtWidgets.QVBoxLayout(self)
+        warning_label = QtWidgets.QLabel("There are no files to delete.")
+        ok_button = QtWidgets.QPushButton("OK", self)
+
+        main_layout.addWidget(warning_label)
+        main_layout.addWidget(ok_button)
+
+        ok_button.clicked.connect(self.close_window)
+
+
 class FileTree(QtWidgets.QTreeWidget):
     """File tree browser class.
 
@@ -353,6 +376,7 @@ class CacheDeleter(QtWidgets.QDialog):
         super(CacheDeleter, self).__init__()
         self.root_path = None
         self.pop_up_confirmation = PopUpConfirmation()
+        self.pop_up_empty = PopUpEmptyList()
         self.init_ui()
         self.setGeometry(300, 300, self.app_size[0], self.app_size[1])
         self.setWindowTitle("Cache Deleter")
@@ -509,8 +533,10 @@ class CacheDeleter(QtWidgets.QDialog):
 
     def exec_pop_up(self):
         """Open pop up confirmation."""
-
-        self.pop_up_confirmation.exec()
+        if self.list_view.count() == 0:
+            self.pop_up_empty.exec_()
+            return
+        self.pop_up_confirmation.exec_()
 
     def delete_file_list(self):
         """Delete systems files added in the list."""
