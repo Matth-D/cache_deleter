@@ -5,7 +5,9 @@ import os
 import datetime
 import platform
 import glob
-from . import utils
+
+# from . import utils
+import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
 
@@ -15,6 +17,8 @@ if PLATFORM_NAME == "windows":
     HOME = os.environ.get("USERPROFILE")
 else:
     HOME = os.path.expanduser("~")
+
+# TODO: if hard delete is off move files to delete folder and create script to delete files older than 2 days in that folder.
 
 
 def get_stylesheet():
@@ -414,11 +418,15 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.time_threshold_button.setInputMask("999")
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
+        self.checkbox_hdelete = QtWidgets.QCheckBox("")
+        self.hdelete_label = QtWidgets.QLabel("Hard Delete")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
         self.layout_h2.addWidget(self.time_threshold_button)
         self.layout_h2.addWidget(self.time_threshold_label)
+        self.layout_h2.addWidget(self.checkbox_hdelete)
+        self.layout_h2.addWidget(self.hdelete_label)
         self.layout_h2.addWidget(self.scan_button)
 
         self.layout_filetree = QtWidgets.QVBoxLayout()
