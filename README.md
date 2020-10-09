@@ -12,7 +12,7 @@ In a terminal execute the cache_deleter.py scripts included at the package root 
 Pick a root path either by typing it in the top bar or browsing through the file system clicking the Browse button.
 Possibility to enter file extensions that will not be ignored in the tree view. Defaults to common Houdini extensions of scenes
 and caches but works with any file type.
-The time threshold parameter defaults to 14 and will display in red the files modified before the amount of days the parameter displays.
+The time threshold parameter defaults to 14 and will display in red the files modified after the amount of days the parameter displays.
 
 Hitting the Scan button will fill the Tree widget with the folder structure starting from the root_path parameter.
 For each folder or file it displays the name, the weight, the percentage weight relative to the root path and the last modified date of the file.
