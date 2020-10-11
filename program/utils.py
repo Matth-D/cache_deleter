@@ -134,4 +134,4 @@ def delete_file(input_path):
         glob_file = glob.glob(path)
         [os.remove(path) for path in glob_file]
     else:
-        os.remove(input_path) 
+        os.remove(input_path)

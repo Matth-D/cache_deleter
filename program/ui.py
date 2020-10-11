@@ -18,6 +18,12 @@ if PLATFORM_NAME == "windows":
 else:
     HOME = os.path.expanduser("~")
 
+parent = os.path.dirname(__file__)
+project_root = os.path.dirname(parent)
+
+# folder to send caches for delayed deleting
+DELETING_FOLDER = os.path.join(project_root, "deleting_folder")
+
 # TODO: if hard delete is off move files to delete folder and create script to delete files older than 2 days in that folder.
 
 
@@ -418,14 +424,14 @@ class CacheDeleter(QtWidgets.QDialog):
         )
         self.time_threshold_button.setInputMask("999")
         self.time_threshold_label = QtWidgets.QLabel("Limit Date")
-        self.checkbox_hdelete = QtWidgets.QCheckBox("")
+        self.checkbox_delete = QtWidgets.QCheckBox("")
         self.hdelete_label = QtWidgets.QLabel("Hard Delete")
         self.scan_button = QtWidgets.QPushButton("Scan", self)
         self.layout_h2.addWidget(self.extensions_list)
         self.layout_h2.addWidget(self.extensions_label)
         self.layout_h2.addWidget(self.time_threshold_button)
         self.layout_h2.addWidget(self.time_threshold_label)
-        self.layout_h2.addWidget(self.checkbox_hdelete)
+        self.layout_h2.addWidget(self.checkbox_delete)
         self.layout_h2.addWidget(self.hdelete_label)
         self.layout_h2.addWidget(self.scan_button)
 
@@ -495,6 +501,8 @@ class CacheDeleter(QtWidgets.QDialog):
         self.reset_all_button.clicked.connect(self.reset_all)
         self.delete_button.clicked.connect(self.exec_pop_up)
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
+        self.checkbox_delete.stateChanged.connect(self.get_checkbox_value)
+        self.delete_button.clicked.connect(self.test_connect_delete)
 
         # Appearance
         self.main_layout.setStretch(2, 5)
@@ -546,9 +554,38 @@ class CacheDeleter(QtWidgets.QDialog):
             return
         self.pop_up_confirmation.exec_()
 
+    def get_checkbox_value(self):
+        """Return checkbox value based on checkstate.
+
+        Returns:
+            int: 1 if checkbox is checked 0 if unchecked.
+        """
+        state = self.checkbox_delete.checkState()
+        if state == QtCore.Qt.CheckState.Checked:
+            return 1
+        return 0
+
+    def test_connect_delete(self):
+        today = datetime.date.today()
+        today_format = today.strftime("%d-%m-%Y")
+        path_folder = os.path.join(DELETING_FOLDER, today_format)
+        if not os.path.exists(path_folder):
+            os.mkdir(path_folder)
+
     def delete_file_list(self):
         """Delete systems files added in the list."""
+        if self.get_checkbox_value() == 0:
+            today = datetime.date.today()
+            today_format = today.strftime("%d/%m/%Y")
+            path_folder = os.path.join(DELETING_FOLDER, "today_format")
+            if not os.path.exists(path_folder):
+                os.mkdir(path_folder)
+            # self.pop_up_confirmation.close_window()
+            # self.list_view.clear()
+            # self.file_tree.clear()
+            # self.file_tree.fill_tree()
 
+            return
         for item_number in range(self.list_view.count()):
             item_path = self.list_view.item(item_number).text()
             if not os.path.exists(item_path):
@@ -563,6 +600,7 @@ class CacheDeleter(QtWidgets.QDialog):
         self.list_view.clear()
         self.file_tree.clear()
         self.file_tree.fill_tree()
+        return
 
     def remove_item_list(self):
         """Remove item from list view."""
