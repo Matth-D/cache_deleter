@@ -135,3 +135,19 @@ def delete_file(input_path):
         [os.remove(path) for path in glob_file]
     else:
         os.remove(input_path)
+
+
+# TODO Finish move function
+def move_file(current_path, destination_dir):
+    """Move input file to destination directory
+
+    Args:
+        current_path (str): Path to the input file.
+        destination_dir (str): Path the the destination directory.
+    """
+    basename = os.path.basename(current_path)
+
+    if re.findall(r"\s[|]\s", os.path.basename(input_path)):
+        path = input_path.split("|")[0].strip()
+        path = re.sub(r"[.]#*[.]", hasht, path)
+        glob_file = glob.glob(path)

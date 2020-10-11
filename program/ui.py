@@ -482,6 +482,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h4)
 
         # Signals and connect
+        self.root_path_button.setText(
+            "/Users/matthieu/GIT/cache_deleter/program/test_folder"
+        )
         self.browse_button.clicked.connect(self.select_file)
         # self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.scan_button.clicked.connect(self.file_tree.get_root_value)
@@ -571,36 +574,39 @@ class CacheDeleter(QtWidgets.QDialog):
         path_folder = os.path.join(DELETING_FOLDER, today_format)
         if not os.path.exists(path_folder):
             os.mkdir(path_folder)
+        for item_number in range(self.list_view.count()):
+            item_path = self.list_view.item(item_number).text()
+            print(item_path)
 
     def delete_file_list(self):
         """Delete systems files added in the list."""
-        if self.get_checkbox_value() == 0:
-            today = datetime.date.today()
-            today_format = today.strftime("%d/%m/%Y")
-            path_folder = os.path.join(DELETING_FOLDER, "today_format")
-            if not os.path.exists(path_folder):
-                os.mkdir(path_folder)
-            # self.pop_up_confirmation.close_window()
-            # self.list_view.clear()
-            # self.file_tree.clear()
-            # self.file_tree.fill_tree()
+        # if self.get_checkbox_value() == 0:
+        #     today = datetime.date.today()
+        #     today_format = today.strftime("%d/%m/%Y")
+        #     path_folder = os.path.join(DELETING_FOLDER, "today_format")
+        #     if not os.path.exists(path_folder):
+        #         os.mkdir(path_folder)
+        # self.pop_up_confirmation.close_window()
+        # self.list_view.clear()
+        # self.file_tree.clear()
+        # self.file_tree.fill_tree()
 
-            return
-        for item_number in range(self.list_view.count()):
-            item_path = self.list_view.item(item_number).text()
-            if not os.path.exists(item_path):
-                print(
-                    "{0} not found or already deleted.".format(
-                        os.path.basename(item_path)
-                    )
-                )
-                continue
-            utils.delete_file(item_path)
-        self.pop_up_confirmation.close_window()
-        self.list_view.clear()
-        self.file_tree.clear()
-        self.file_tree.fill_tree()
-        return
+        # return
+        # for item_number in range(self.list_view.count()):
+        #     item_path = self.list_view.item(item_number).text()
+        #     if not os.path.exists(item_path):
+        #         print(
+        #             "{0} not found or already deleted.".format(
+        #                 os.path.basename(item_path)
+        #             )
+        #         )
+        #         continue
+        #     utils.delete_file(item_path)
+        # self.pop_up_confirmation.close_window()
+        # self.list_view.clear()
+        # self.file_tree.clear()
+        # self.file_tree.fill_tree()
+        # return
 
     def remove_item_list(self):
         """Remove item from list view."""
