@@ -137,17 +137,35 @@ def delete_file(input_path):
         os.remove(input_path)
 
 
-# TODO Finish move function
 def move_file(current_path, destination_dir):
     """Move input file to destination directory
 
     Args:
         current_path (str): Path to the input file.
-        destination_dir (str): Path the the destination directory.
+        destination_dir (str): Path the the destination directory. Must not include file basename.
     """
-    basename = os.path.basename(current_path)
-
-    if re.findall(r"\s[|]\s", os.path.basename(input_path)):
-        path = input_path.split("|")[0].strip()
+    if not os.path.exists(destination_dir):
+        return
+    file_list = [current_path]
+    if re.findall(r"\s[|]\s", os.path.basename(current_path)):
+        hasht = re.findall(r"[.]#*[.]", current_path)[0]
+        hasht = re.sub(r"#", "*", hasht)
+        path = current_path.split("|")[0].strip()
         path = re.sub(r"[.]#*[.]", hasht, path)
-        glob_file = glob.glob(path)
+        file_list = glob.glob(path)
+    if not file_list:
+        return
+    for filepath in file_list:
+        basename = os.path.basename(filepath)
+        new_path = os.path.join(destination_dir, basename)
+        shutil.move(filepath, new_path)
+
+
+# file_sq = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence_number2.###.bgeo.sc | (1-100)"
+# file_solo = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/test_single_sequence145.png"
+# folder = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder3"
+# destination_dir = "/Users/matthieu/GIT/cache_deleter/deleting_folder"
+
+# move_file(file_sq, destination_dir)
+# move_file(folder, destination_dir)
+# move_file(file_solo, destination_dir)

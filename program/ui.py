@@ -21,10 +21,9 @@ else:
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
 
-# folder to send caches for delayed deleting
 DELETING_FOLDER = os.path.join(project_root, "deleting_folder")
-
-# TODO: if hard delete is off move files to delete folder and create script to delete files older than 2 days in that folder.
+if not os.path.exists(DELETING_FOLDER):
+    os.mkdir(DELETING_FOLDER)
 
 
 def get_stylesheet():
@@ -486,7 +485,6 @@ class CacheDeleter(QtWidgets.QDialog):
             "/Users/matthieu/GIT/cache_deleter/program/test_folder"
         )
         self.browse_button.clicked.connect(self.select_file)
-        # self.root_path_button.textChanged.connect(self.file_tree.get_root_value)
         self.scan_button.clicked.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(
             self.file_tree.get_time_threshold
@@ -505,7 +503,6 @@ class CacheDeleter(QtWidgets.QDialog):
         self.delete_button.clicked.connect(self.exec_pop_up)
         self.pop_up_confirmation.confirm_button.clicked.connect(self.delete_file_list)
         self.checkbox_delete.stateChanged.connect(self.get_checkbox_value)
-        self.delete_button.clicked.connect(self.test_connect_delete)
 
         # Appearance
         self.main_layout.setStretch(2, 5)
@@ -568,29 +565,63 @@ class CacheDeleter(QtWidgets.QDialog):
             return 1
         return 0
 
-    def test_connect_delete(self):
+    # def test_connect_delete(self):
+    #     today = datetime.date.today()
+    #     today_format = today.strftime("%d-%m-%Y")
+    #     path_folder = os.path.join(DELETING_FOLDER, today_format)
+    #     if not os.path.exists(path_folder):
+    #         os.mkdir(path_folder)
+    #     for item_number in range(self.list_view.count()):
+    #         item_path = self.list_view.item(item_number).text()
+    #         utils.move_file(item_path, DELETING_FOLDER)
+
+    def delete_file_list(self):
+        """Delete systems files added in the list."""
         today = datetime.date.today()
-        today_format = today.strftime("%d-%m-%Y")
+        today_format = today.strftime("%d/%m/%Y")
         path_folder = os.path.join(DELETING_FOLDER, today_format)
         if not os.path.exists(path_folder):
             os.mkdir(path_folder)
         for item_number in range(self.list_view.count()):
             item_path = self.list_view.item(item_number).text()
-            print(item_path)
-
-    def delete_file_list(self):
-        """Delete systems files added in the list."""
+            if not os.path.exists(item_path):
+                print(
+                    "{0} not found or already deleted.".format(
+                        os.path.basename(item_path)
+                    )
+                )
+                continue
+            # Recycle delete
+            if self.get_checkbox_value() == 0:
+                utils.move_file(item_path, DELETING_FOLDER)
+                continue
+            # Hard Delete
+            utils.delete_file(item_path)
+        self.pop_up_confirmation.close_window()
+        self.list_view.clear()
+        self.file_tree.clear()
+        self.file_tree.fill_tree()
+        return
         # if self.get_checkbox_value() == 0:
         #     today = datetime.date.today()
         #     today_format = today.strftime("%d/%m/%Y")
         #     path_folder = os.path.join(DELETING_FOLDER, "today_format")
         #     if not os.path.exists(path_folder):
         #         os.mkdir(path_folder)
+        #     for item_number in range(self.list_view.count()):
+        #         item_path = self.list_view.item(item_number).text()
+        #         if not os.path.exists(item_path):
+        #             print(
+        #                 "{0} not found or already deleted.".format(
+        #                     os.path.basename(item_path)
+        #                 )
+        #             )
+        #             continue
+        #         utils.move_file(item_path, DELETING_FOLDER)
         # self.pop_up_confirmation.close_window()
         # self.list_view.clear()
         # self.file_tree.clear()
         # self.file_tree.fill_tree()
-
         # return
         # for item_number in range(self.list_view.count()):
         #     item_path = self.list_view.item(item_number).text()
