@@ -68,7 +68,6 @@ class BaseDialog(QtWidgets.QDialog):
 
     def init_ui(self):
         """Init pop up UI."""
-
         pass
 
     def center_window(self):
@@ -103,7 +102,7 @@ class PopUpConfirmation(BaseDialog):
         main_layout = QtWidgets.QVBoxLayout(self)
         horizontal_layout = QtWidgets.QHBoxLayout()
         warning_label = QtWidgets.QLabel(
-            "All files selected will be permmanently lost. Continue ?"
+            "All files selected will be deleted. Continue ?"
         )
         self.confirm_button = QtWidgets.QPushButton("Confirm", self)
         self.cancel_button = QtWidgets.QPushButton("Cancel", self)
@@ -565,20 +564,10 @@ class CacheDeleter(QtWidgets.QDialog):
             return 1
         return 0
 
-    # def test_connect_delete(self):
-    #     today = datetime.date.today()
-    #     today_format = today.strftime("%d-%m-%Y")
-    #     path_folder = os.path.join(DELETING_FOLDER, today_format)
-    #     if not os.path.exists(path_folder):
-    #         os.mkdir(path_folder)
-    #     for item_number in range(self.list_view.count()):
-    #         item_path = self.list_view.item(item_number).text()
-    #         utils.move_file(item_path, DELETING_FOLDER)
-
     def delete_file_list(self):
         """Delete systems files added in the list."""
         today = datetime.date.today()
-        today_format = today.strftime("%d/%m/%Y")
+        today_format = today.strftime("%d-%m-%Y")
         path_folder = os.path.join(DELETING_FOLDER, today_format)
         if not os.path.exists(path_folder):
             os.mkdir(path_folder)
@@ -593,7 +582,7 @@ class CacheDeleter(QtWidgets.QDialog):
                 continue
             # Recycle delete
             if self.get_checkbox_value() == 0:
-                utils.move_file(item_path, DELETING_FOLDER)
+                utils.move_file(item_path, path_folder)
                 continue
             # Hard Delete
             utils.delete_file(item_path)
@@ -602,42 +591,6 @@ class CacheDeleter(QtWidgets.QDialog):
         self.file_tree.clear()
         self.file_tree.fill_tree()
         return
-        # if self.get_checkbox_value() == 0:
-        #     today = datetime.date.today()
-        #     today_format = today.strftime("%d/%m/%Y")
-        #     path_folder = os.path.join(DELETING_FOLDER, "today_format")
-        #     if not os.path.exists(path_folder):
-        #         os.mkdir(path_folder)
-        #     for item_number in range(self.list_view.count()):
-        #         item_path = self.list_view.item(item_number).text()
-        #         if not os.path.exists(item_path):
-        #             print(
-        #                 "{0} not found or already deleted.".format(
-        #                     os.path.basename(item_path)
-        #                 )
-        #             )
-        #             continue
-        #         utils.move_file(item_path, DELETING_FOLDER)
-        # self.pop_up_confirmation.close_window()
-        # self.list_view.clear()
-        # self.file_tree.clear()
-        # self.file_tree.fill_tree()
-        # return
-        # for item_number in range(self.list_view.count()):
-        #     item_path = self.list_view.item(item_number).text()
-        #     if not os.path.exists(item_path):
-        #         print(
-        #             "{0} not found or already deleted.".format(
-        #                 os.path.basename(item_path)
-        #             )
-        #         )
-        #         continue
-        #     utils.delete_file(item_path)
-        # self.pop_up_confirmation.close_window()
-        # self.list_view.clear()
-        # self.file_tree.clear()
-        # self.file_tree.fill_tree()
-        # return
 
     def remove_item_list(self):
         """Remove item from list view."""
