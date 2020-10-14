@@ -10,6 +10,7 @@ import glob
 import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
+sys.setrecursionlimit(10 ** 6)
 
 # Set constants
 PLATFORM_NAME = platform.system().lower()
@@ -334,7 +335,7 @@ class FileTree(QtWidgets.QTreeWidget):
             #  create list with file prefixes to collapse into a sequence
             for path in file_paths:
                 if not utils.is_sequence(path):
-                    break
+                    continue
                 sq_prefix = path.split(".")[0]
                 if sq_prefix not in file_sq_path:
                     file_sq_path.append(sq_prefix)

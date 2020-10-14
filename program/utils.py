@@ -79,6 +79,7 @@ def is_sequence(path):
     Returns:
         bool: True or False if path is part of an image sequence.
     """
+
     basename = os.path.basename(path)
     match = re.findall(r"[.]\d*[.]", basename)
     if match:
@@ -159,13 +160,3 @@ def move_file(current_path, destination_dir):
         basename = os.path.basename(filepath)
         new_path = os.path.join(destination_dir, basename)
         shutil.move(filepath, new_path)
-
-
-# file_sq = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/bgeo_sequence_number2.###.bgeo.sc | (1-100)"
-# file_solo = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder1/test_single_sequence145.png"
-# folder = "/Users/matthieu/GIT/cache_deleter/program/test_folder/folder3"
-# destination_dir = "/Users/matthieu/GIT/cache_deleter/deleting_folder"
-
-# move_file(file_sq, destination_dir)
-# move_file(folder, destination_dir)
-# move_file(file_solo, destination_dir)
