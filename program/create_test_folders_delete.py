@@ -8,6 +8,8 @@ import time
 
 def create_test_folder_delete():
 
+    file_num = 30
+
     path_root = os.path.join(
         os.path.dirname(os.path.dirname(__file__)), "deleting_folder"
     )
@@ -25,7 +27,7 @@ def create_test_folder_delete():
     folder4 = os.path.join(root_folder, "folder4")
     folder5 = os.path.join(root_folder, "folder5")
 
-    for i in range(150):
+    for i in range(file_num):
         t_delta = datetime.timedelta(7)
         date_dt = today - t_delta
         date_dt_format = date_dt.strftime("%d-%m-%Y")
@@ -41,7 +43,7 @@ def create_test_folder_delete():
         os.utime(f1_path, (mod_time, mod_time))
     os.utime(folder1, (mod_time, mod_time))
 
-    for i in range(250):
+    for i in range(file_num):
         t_delta = datetime.timedelta(14)
         date_dt = today - t_delta
         date_dt_format = date_dt.strftime("%d-%m-%Y")
@@ -57,7 +59,7 @@ def create_test_folder_delete():
         os.utime(f2_path, (mod_time, mod_time))
     os.utime(folder2, (mod_time, mod_time))
 
-    for i in range(250):
+    for i in range(file_num):
         t_delta = datetime.timedelta(37)
         date_dt = today - t_delta
         date_dt_format = date_dt.strftime("%d-%m-%Y")
@@ -73,7 +75,7 @@ def create_test_folder_delete():
         os.utime(f3_path, (mod_time, mod_time))
     os.utime(folder3, (mod_time, mod_time))
 
-    for i in range(250):
+    for i in range(file_num):
         t_delta = datetime.timedelta(55)
         date_dt = today - t_delta
         date_dt_format = date_dt.strftime("%d-%m-%Y")
@@ -89,7 +91,7 @@ def create_test_folder_delete():
         os.utime(f4_path, (mod_time, mod_time))
     os.utime(folder4, (mod_time, mod_time))
 
-    for i in range(250):
+    for i in range(file_num):
         t_delta = datetime.timedelta(2)
         date_dt = today - t_delta
         date_dt_format = date_dt.strftime("%d-%m-%Y")
