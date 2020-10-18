@@ -112,8 +112,11 @@ venv.bak/
 tempCodeRunnerFile.python
 tempCodeRunnerFile.py
 
+
+#project specific
 test_folder
 testing
+deleting_folder
 
 
 *.DS_Store
