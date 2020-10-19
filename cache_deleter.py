@@ -4,7 +4,7 @@
 """
 
 
-from program import ui
+from program import core
 
 if __name__ == "__main__":
-    ui.main()
+    core.main()
