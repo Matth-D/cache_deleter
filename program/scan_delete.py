@@ -3,13 +3,23 @@
 import os
 import datetime
 import shutil
+import json
+
 
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
 
-# Replace DELETING FOLDER CONSTANT BY LOCATION OF DELETING FOLDER
+config_folder = os.path.join(project_root, "config")
+settings = os.path.join(config_folder, "settings.json")
+
 DELETING_FOLDER = os.path.join(project_root, "deleting_folder")
-DAY_DELTA = 14
+if os.path.exists(settings):
+    with open(settings, "r") as f:
+        settings_dict = json.load(f)
+        DELETING_FOLDER = settings_dict["DELETE_FOLDER"]
+        DAY_DELTA = settings_dict["DAY_DELTA"]
+
+# Replace DELETING FOLDER CONSTANT BY LOCATION OF DELETING FOLDER
 
 
 def recycle_delete(deleting_folder_path):
@@ -33,4 +43,4 @@ def recycle_delete(deleting_folder_path):
                 shutil.rmtree(item.path)
 
 
-recycle_delete(DELETING_FOLDER)
+# recycle_delete(DELETING_FOLDER)

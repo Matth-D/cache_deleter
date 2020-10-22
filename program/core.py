@@ -22,10 +22,6 @@ else:
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
 
-DELETING_FOLDER = os.path.join(project_root, "deleting_folder")
-if not os.path.exists(DELETING_FOLDER):
-    os.mkdir(DELETING_FOLDER)
-
 
 def get_stylesheet():
     """Return CSS stylesheet.
@@ -113,6 +109,32 @@ class PopUpConfirmation(BaseDialog):
         horizontal_layout.addWidget(self.cancel_button)
 
         self.cancel_button.clicked.connect(self.close_window)
+
+
+class PopUpNoInstall(BaseDialog):
+    """Pop Up missing settings.json file.
+
+    Args:
+        BaseDialog (class): Base Dialog class inheritance.
+    """
+
+    def __init__(self):
+        super(PopUpNoInstall, self).__init__()
+
+    def init_ui(self):
+        """Init PopUpNoPath UI."""
+
+        main_layout = QtWidgets.QVBoxLayout(self)
+        warning_label = QtWidgets.QLabel(
+            """Settings file is missing, make sure to run the install.py 
+            script before using cache deleter"""
+        )
+        ok_button = QtWidgets.QPushButton("OK", self)
+
+        main_layout.addWidget(warning_label)
+        main_layout.addWidget(ok_button)
+
+        ok_button.clicked.connect(self.close_window)
 
 
 class PopUpNoPath(BaseDialog):
@@ -304,6 +326,13 @@ class FileTree(QtWidgets.QTreeWidget):
         """Fill tree widget scanning folder hierarchy starting from root path"""
 
         pop_up = PopUpNoPath()
+        pop_up_noinstall = PopUpNoInstall()
+        project_root = os.path.dirname(os.path.dirname(__file__))
+        settings_file = os.path.join(project_root, "config", "settings.json")
+
+        if not os.path.exists(settings_file):
+            pop_up_noinstall.exec_()
+            return
         if not os.path.exists(self.root_path):
             pop_up.exec_()
             return
