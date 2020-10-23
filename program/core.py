@@ -28,15 +28,9 @@ DELETING_FOLDER = None
 if os.path.exists(settings_json):
     with open(settings_json, "r") as f:
         settings_dict = json.load(f)
-        DELETING_FOLDER = settings_dict["DELETE_FOLDER"]
+        DELETING_FOLDER = settings_dict["DELETING_FOLDER"]
     if not os.path.exists(DELETING_FOLDER):
         os.mkdir(DELETING_FOLDER)
-
-print(DELETING_FOLDER)
-print(type(DELETING_FOLDER))
-
-# TODO Do a full test starting from install to file deletion check everything works
-#     then revert testing values to blank.
 
 
 def get_stylesheet():
@@ -526,9 +520,9 @@ class CacheDeleter(QtWidgets.QDialog):
         self.main_layout.addLayout(self.layout_h4)
 
         # Signals and connect
-        self.root_path_button.setText(
-            "/Users/matthieu/GIT/cache_deleter/program/test_folder"
-        )
+        # self.root_path_button.setText(
+        #     "/Users/matthieu/GIT/cache_deleter/testing/test_folder"
+        # )
         self.browse_button.clicked.connect(self.select_file)
         self.scan_button.clicked.connect(self.file_tree.get_root_value)
         self.time_threshold_button.textChanged.connect(

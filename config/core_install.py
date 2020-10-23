@@ -155,10 +155,10 @@ class Installer(QtWidgets.QDialog):
         self.install_button.clicked.connect(self.make_install)
 
         # Default, to delete
+        self.days_button.setText("14")
         # self.delete_path_button.setText(
         #     "/Users/matthieu/GIT/cache_deleter/deleting_folder"
         # )
-        # self.days_button.setText("14")
 
     def get_delete_folder_path(self):
         self.delete_install_path = self.delete_path_button.text()
