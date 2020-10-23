@@ -118,3 +118,4 @@ test_folder
 testing
 deleting_folder
 *.DS_Store
+config/settings.json
