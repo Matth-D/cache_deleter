@@ -117,6 +117,7 @@ tempCodeRunnerFile.py
 test_folder
 testing
 deleting_folder
-
+config/settings*
 
 *.DS_Store
+config/settings.json
