@@ -90,7 +90,7 @@ class Installer(QtWidgets.QDialog):
         self.pop_up_empty = PopUpFields()
         self.delete_install_path = None
         self.days_delta = None
-        self.install_dict = {"DELETE_FOLDER": None, "DAYS_DELTA": None}
+        self.install_dict = {"DELETING_FOLDER": None, "DAYS_DELTA": None}
 
     def init_ui(self):
         """Init UI Layout."""
@@ -109,6 +109,13 @@ class Installer(QtWidgets.QDialog):
         self.layout_h1 = QtWidgets.QHBoxLayout()
         self.delete_path_button = QtWidgets.QLineEdit(self)
         self.browse_button = QtWidgets.QPushButton("Browse...", self)
+        tooltip1 = (
+            "Pick the folder path where selected caches will be sent,"
+            "filed and deleted according to their last modified"
+            " dates. Best to create a new folder."
+        )
+        self.delete_path_button.setToolTip(tooltip1)
+        self.browse_button.setToolTip(tooltip1)
         self.layout_h1.addWidget(self.delete_path_button)
         self.layout_h1.addWidget(self.browse_button)
 
@@ -116,6 +123,12 @@ class Installer(QtWidgets.QDialog):
         self.days_button = QtWidgets.QLineEdit(self)
         self.days_button.setInputMask("999")
         self.days_label = QtWidgets.QLabel("Days")
+        tootltip2 = (
+            "The time threshold after which the files stored in the "
+            "folder specified above will be deleted"
+        )
+        self.days_button.setToolTip(tootltip2)
+        self.days_label.setToolTip(tootltip2)
         self.horizontal_spacer_1 = QtWidgets.QSpacerItem(
             40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
         )
@@ -142,19 +155,25 @@ class Installer(QtWidgets.QDialog):
         self.install_button.clicked.connect(self.make_install)
 
         # Default, to delete
-        self.delete_path_button.setText(
-            "/Users/matthieu/GIT/cache_deleter/deleting_folder"
-        )
-        self.days_button.setText("14")
+        # self.delete_path_button.setText(
+        #     "/Users/matthieu/GIT/cache_deleter/deleting_folder"
+        # )
+        # self.days_button.setText("14")
 
     def get_delete_folder_path(self):
         self.delete_install_path = self.delete_path_button.text()
+        if os.listdir(self.delete_install_path) or not os.path.exists(
+            self.delete_install_path
+        ):
+            self.delete_install_path = os.path.join(
+                self.delete_install_path, "deleting_folder"
+            )
 
     def get_days_delta(self):
         self.days_delta = int(self.days_button.text())
 
     def fill_install_dict(self):
-        self.install_dict["DELETE_FOLDER"] = self.delete_install_path
+        self.install_dict["DELETING_FOLDER"] = self.delete_install_path
         self.install_dict["DAYS_DELTA"] = self.days_delta
 
     def select_file(self):
@@ -180,6 +199,7 @@ class Installer(QtWidgets.QDialog):
 
         with open(settings_json, "w") as out_json:
             json.dump(self.install_dict, out_json, indent=4)
+
         QtCore.QCoreApplication.instance().quit()
 
     def center_window(self):

@@ -5,6 +5,7 @@ import os
 import datetime
 import platform
 import glob
+import json
 
 # from . import utils
 import utils
@@ -21,6 +22,21 @@ else:
 
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
+
+settings_json = os.path.join(project_root, "config", "settings.json")
+DELETING_FOLDER = None
+if os.path.exists(settings_json):
+    with open(settings_json, "r") as f:
+        settings_dict = json.load(f)
+        DELETING_FOLDER = settings_dict["DELETE_FOLDER"]
+    if not os.path.exists(DELETING_FOLDER):
+        os.mkdir(DELETING_FOLDER)
+
+print(DELETING_FOLDER)
+print(type(DELETING_FOLDER))
+
+# TODO Do a full test starting from install to file deletion check everything works
+#     then revert testing values to blank.
 
 
 def get_stylesheet():
