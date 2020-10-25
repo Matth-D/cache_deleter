@@ -6,9 +6,9 @@ import datetime
 import platform
 import glob
 import json
+from . import utils
 
-# from . import utils
-import utils
+# import utils
 from PySide2 import QtWidgets, QtGui, QtCore
 
 sys.setrecursionlimit(10 ** 6)

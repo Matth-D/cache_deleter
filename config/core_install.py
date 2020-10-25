@@ -161,6 +161,8 @@ class Installer(QtWidgets.QDialog):
         # )
 
     def get_delete_folder_path(self):
+        """Get path from delete folder path line edit field."""
+
         self.delete_install_path = self.delete_path_button.text()
         if os.listdir(self.delete_install_path) or not os.path.exists(
             self.delete_install_path
@@ -170,9 +172,13 @@ class Installer(QtWidgets.QDialog):
             )
 
     def get_days_delta(self):
+        """Get days delta from line edit field."""
+
         self.days_delta = int(self.days_button.text())
 
     def fill_install_dict(self):
+        """Fill settings dictionary with user inputs."""
+
         self.install_dict["DELETING_FOLDER"] = self.delete_install_path
         self.install_dict["DAYS_DELTA"] = self.days_delta
 
@@ -185,6 +191,9 @@ class Installer(QtWidgets.QDialog):
         self.delete_path_button.setText(folder_path)
 
     def make_install(self):
+        """Create settings json file with current dictionary.
+        It will be used in other modules to delete files or move them in correct folder."""
+
         self.get_delete_folder_path()
         self.get_days_delta()
         self.fill_install_dict()
