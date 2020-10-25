@@ -16,11 +16,7 @@ else:
 
 
 class BaseDialog(QtWidgets.QDialog):
-    """Base Dialog class for pop ups.
-
-    Args:
-        QtWidgets.QDialog (class): QDialog class inheritance.
-    """
+    """Base Dialog class for pop ups."""
 
     def __init__(self):
         super(BaseDialog, self).__init__()
@@ -50,11 +46,7 @@ class BaseDialog(QtWidgets.QDialog):
 
 
 class PopUpFields(BaseDialog):
-    """Warning Pop Up if empty field.
-
-    Args:
-        BaseDialog (class): Base Dialog class inheritance.
-    """
+    """Warning Pop Up if empty field."""
 
     def __init__(self):
         super(PopUpFields, self).__init__()
@@ -74,11 +66,7 @@ class PopUpFields(BaseDialog):
 
 
 class Installer(QtWidgets.QDialog):
-    """Cache Deleter Installer main class.
-
-    Args:
-        QtWidgets.QDialog (class): QtWidgets.QDialog inheritance.
-    """
+    """Cache Deleter Installer main class."""
 
     def __init__(self):
         super(Installer, self).__init__()

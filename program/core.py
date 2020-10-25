@@ -59,11 +59,7 @@ class RootPercentageBar(QtWidgets.QProgressBar):
 
 
 class BaseDialog(QtWidgets.QDialog):
-    """Base Dialog class for pop ups.
-
-    Args:
-        QtWidgets.QDialog (class): QDialog class inheritance.
-    """
+    """Base Dialog class for pop ups."""
 
     def __init__(self):
         super(BaseDialog, self).__init__()
@@ -93,11 +89,7 @@ class BaseDialog(QtWidgets.QDialog):
 
 
 class PopUpConfirmation(BaseDialog):
-    """Confirmation Pop up upon file deletion.
-
-    Args:
-        BaseDialog (class): Base Dialog class inheritance.
-    """
+    """Confirmation Pop up upon file deletion."""
 
     def __init__(self):
         super(PopUpConfirmation, self).__init__()
@@ -121,11 +113,7 @@ class PopUpConfirmation(BaseDialog):
 
 
 class PopUpNoInstall(BaseDialog):
-    """Pop Up missing settings.json file.
-
-    Args:
-        BaseDialog (class): Base Dialog class inheritance.
-    """
+    """Pop Up missing settings.json file."""
 
     def __init__(self):
         super(PopUpNoInstall, self).__init__()
@@ -147,11 +135,7 @@ class PopUpNoInstall(BaseDialog):
 
 
 class PopUpNoPath(BaseDialog):
-    """Pop Up empty path class.
-
-    Args:
-        BaseDialog (class): Base Dialog class inheritance.
-    """
+    """Pop Up empty path class."""
 
     def __init__(self):
         super(PopUpNoPath, self).__init__()
@@ -172,11 +156,7 @@ class PopUpNoPath(BaseDialog):
 
 
 class PopUpEmptyList(BaseDialog):
-    """Pop Up empty list class.
-
-    Args:
-        BaseDialog (class): Base Dialog class inheritance.
-    """
+    """Pop Up empty list class."""
 
     def __init__(self):
         super(PopUpEmptyList, self).__init__()
@@ -195,11 +175,7 @@ class PopUpEmptyList(BaseDialog):
 
 
 class FileTree(QtWidgets.QTreeWidget):
-    """File tree browser class.
-
-    Args:
-        QtWidgets.QTreeWidget (class): QTreeWidget class inheritance.
-    """
+    """File tree browser class."""
 
     def __init__(self, *args, **kwargs):
         super(FileTree, self).__init__()
