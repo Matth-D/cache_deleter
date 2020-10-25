@@ -75,7 +75,6 @@ class BaseDialog(QtWidgets.QDialog):
 
     def init_ui(self):
         """Init pop up UI."""
-        pass
 
     def center_window(self):
         """Centers window on screen"""
@@ -136,7 +135,7 @@ class PopUpNoInstall(BaseDialog):
 
         main_layout = QtWidgets.QVBoxLayout(self)
         warning_label = QtWidgets.QLabel(
-            """Settings file is missing, make sure to run the install.py 
+            """Settings file is missing, make sure to run the install.py
             script before using cache deleter"""
         )
         ok_button = QtWidgets.QPushButton("OK", self)

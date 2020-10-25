@@ -32,7 +32,6 @@ class BaseDialog(QtWidgets.QDialog):
 
     def init_ui(self):
         """Init pop up UI."""
-        pass
 
     def center_window(self):
         """Centers window on screen"""
