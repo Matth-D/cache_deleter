@@ -26,3 +26,6 @@ QHeaderView{
 QLabel{
     color: white;
 }
+QCheckBox{
+    background-color:1A191A;
+}
