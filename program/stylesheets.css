@@ -23,3 +23,6 @@ QHeaderView{
     background-color:#1A191A;
     color: white;
 }
+QLabel{
+    color: white;
+}
