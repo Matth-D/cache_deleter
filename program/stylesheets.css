@@ -29,3 +29,6 @@ QLabel{
 QCheckBox{
     background-color:1A191A;
 }
+QTreeWidget::branch{
+    background-color:white;
+}
