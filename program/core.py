@@ -1,24 +1,21 @@
 """Cache Deleter"""
 
-import sys
-import os
 import datetime
-import platform
 import glob
 import json
-from . import utils
+import os
+import platform
+import sys
 
 # import utils
-from PySide2 import QtWidgets, QtGui, QtCore
+from PySide2 import QtCore, QtGui, QtWidgets
+
+from . import utils
 
 sys.setrecursionlimit(10 ** 6)
 
 # Set constants
-PLATFORM_NAME = platform.system().lower()
-if PLATFORM_NAME == "windows":
-    HOME = os.environ.get("USERPROFILE")
-else:
-    HOME = os.path.expanduser("~")
+HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
 
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
