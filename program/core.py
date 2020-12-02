@@ -279,7 +279,6 @@ class FileTree(QtWidgets.QTreeWidget):
         item_name = "{0}.{1}{2} | ({3}-{4})".format(
             basename, padding, suffix, min_frame, max_frame
         )
-        # creer function pour recuperer size d'une sequence a partir de file_glob
         byte_size = utils.get_size(file_sample)
         file_size = utils.byte_size_to_display(byte_size)
 
