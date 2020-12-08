@@ -15,7 +15,8 @@ from . import utils
 sys.setrecursionlimit(10 ** 6)
 
 # Set constants
-HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
+# HOME = os.environ.get("HOME", os.environ.get("USERPROFILE"))
+HOME = os.path.expanduser("~")
 
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
