@@ -236,7 +236,7 @@ class FileTree(QtWidgets.QTreeWidget):
         file_size = utils.byte_size_to_display(byte_size)
 
         root_prct = 0
-        if byte_size != 0:
+        if byte_size:
             root_prct = round((byte_size / self.root_size) * 100)
 
         m_time = os.path.getmtime(path)
@@ -284,7 +284,7 @@ class FileTree(QtWidgets.QTreeWidget):
         file_size = utils.byte_size_to_display(byte_size)
 
         root_prct = 0
-        if byte_size != 0:
+        if byte_size:
             root_prct = round((byte_size / self.root_size) * 100)
 
         m_time = os.path.getmtime(file_sample)
@@ -352,11 +352,13 @@ class FileTree(QtWidgets.QTreeWidget):
                     file_sq_path.append(sq_prefix)
 
             # add non sequence paths to tree
-            for path in file_s_paths:
-                self.item_single(path, current_item)
+            # for path in file_s_paths:
+            #     self.item_single(path, current_item)
+            [self.item_single(path, current_item) for path in file_s_paths]
 
-            for path in file_sq_path:
-                self.item_sequence(path, current_item)
+            # for path in file_sq_path:
+            #     self.item_sequence(path, current_item)
+            [self.item_sequence(path, current_item) for path in file_sq_path]
 
         root_item = self.item_single(self.root_path, self)
         self.expandItem(root_item)
@@ -375,7 +377,7 @@ class FileTree(QtWidgets.QTreeWidget):
             item_name = item.text(0)
             path.insert(0, item_name)
             parent_item = item.parent()
-            if parent_item is not None:
+            if parent_item:
                 iterate_item(parent_item, path)
             else:
                 return
