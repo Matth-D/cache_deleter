@@ -1,10 +1,9 @@
 """Script that will scan the deleting folder once every day and delete files older than time threshold"""
 
-import os
 import datetime
-import shutil
 import json
-
+import os
+import shutil
 
 parent = os.path.dirname(__file__)
 project_root = os.path.dirname(parent)
